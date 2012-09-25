@@ -1,6 +1,12 @@
 function [blockSizes, blockStarts, blockSymbols] = getContigBlocks( ids )
-%  Given vector "ids" of discrete ids (integers)
+%  Given a sequence "ids" of discrete positive integers
 %     find all contiguous blocks within it
+%USAGE:
+%  [S, L, A] = getContigBlocks( [1 1 1 2 2 2 2 1 3 3] );
+%  will return [B,L,S], where
+%      S : [3 4 1 2] is vector of block sizes
+%      L : [1 4 8 9] is vector of starting locations 
+%      A : [1 2 1 3] is vector of block labels (original vals in "ids")
 
 blockSizes = [];
 blockStarts = [];
