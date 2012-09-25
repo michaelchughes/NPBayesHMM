@@ -1,4 +1,4 @@
-function settings = defaultOutputParams_BPHMM( outParams, Niter )
+function settings = defaultOutputParams_BPHMM( outParams, algP )
 
 saveDir = getUserSpecifiedPath( 'SimulationResults' );
 
@@ -16,14 +16,23 @@ settings.saveDir = fullfile( saveDir, num2str(jobID), num2str(taskID) );
 if ~exist( settings.saveDir, 'dir' )
     [~,~] = mkdir( settings.saveDir );
 end
-if Niter <= 200
+
+if isfield( algP, 'TimeLimit' ) && ~isempty( algP.TimeLimit )
+   TL = algP.TimeLimit;
+   Niter = Inf;
+else
+   TL = Inf;
+   Niter = algP.Niter;
+end
+
+if TL <= 5*60 || Niter <= 200
     settings.saveEvery = 5;
     settings.printEvery = 5;
     settings.logPrEvery = 1;
     settings.statsEvery = 1;
-elseif Niter <= 5000    
+elseif TL <= 2*3600 || Niter <= 5000    
     settings.saveEvery = 25;
-    settings.printEvery = 50;
+    settings.printEvery = 25;
     settings.logPrEvery = 5;    
     settings.statsEvery = 5;
 else

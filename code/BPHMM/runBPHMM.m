@@ -18,6 +18,8 @@ function [ChainHist] = runBPHMM( dataParams, modelParams, outParams, algParams, 
 %   initial Markov state (# of initial features, initial state seq., etc.)
 %   {'InitFunc', @initBPHMMfromGroundTruth'} initializes to known stateSeq
 
+% Add required libraries, etc.
+configNPBayesToolbox;
 
 % ================================================ SANITIZE INPUT
 % Converts strings to doubles when possible, etc. to allow command line input
@@ -34,7 +36,7 @@ dataParams = dataParams(2:end);
 algDefs = defaultMCMCParams_BPHMM();
 algParams = updateParamsWithUserInput(  algDefs, algParams );
 
-outDefs = defaultOutputParams_BPHMM( outParams, algParams.Niter );
+outDefs = defaultOutputParams_BPHMM( outParams, algParams );
 outParams = updateParamsWithUserInput( outDefs, outParams(3:end) );
 
 initDefs = defaultInitMCMC_BPHMM();
@@ -73,4 +75,8 @@ randomseed( [SEED 1 2] );
 [Psi, algParams, outParms] = initParams.InitFunc( data, model, initParams, algParams, outParams );
 
 % ================================================= RUN INFERENCE
-ChainHist = RunMCMCSimForBPHMM( data, Psi, algParams, outParams);
+if isfield( algParams, 'TimeLimit' ) && ~isempty( algParams.TimeLimit )
+  ChainHist = RunTimedMCMCSimForBPHMM( data, Psi, algParams, outParams);
+else
+  ChainHist = RunMCMCSimForBPHMM( data, Psi, algParams, outParams);
+end
