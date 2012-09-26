@@ -125,7 +125,7 @@ eta = gamma *c/(c + N -1 );
 logPrNumFeat_Diff = ( uNew - uCur )*log( eta ) +  gammaln( uCur + 1 ) - gammaln( uNew + 1 );
 
 % -------------------------------- p( x | eta, theta, F)  terms
-if isfield( Psi.cache, 'logSoftEv' )
+if isfield( Psi, 'cache' ) && isfield( Psi.cache, 'logSoftEv' )
     logSoftEv = Psi.cache.logSoftEv{ii};
     if strcmp( descrStr, 'birth' )
         logSoftEvStar = propThetaM.calcLogSoftEv( ii, data,  [K+1] );
@@ -134,7 +134,7 @@ if isfield( Psi.cache, 'logSoftEv' )
 else
     logSoftEv = propThetaM.calcLogSoftEv( ii, data, [availFeatIDs K+1] ); 
 end
-if isfield( Psi.cache, 'logMargPrObs' )
+if isfield(Psi,'cache') && isfield( Psi.cache, 'logMargPrObs' )
     logMargPrObs_Cur = Psi.cache.logMargPrObs(ii);
 else
     curF_ii = false( size(propF_ii) );
@@ -175,12 +175,15 @@ if doAccept
     Psi.ThetaM = propThetaM;
     Psi.TransM = Psi.TransM.setEta( ii, propF_ii, propEta );
     
-    if isfield( Psi.cache, 'logSoftEv' )
+    if isfield(Psi,'cache') && isfield( Psi.cache, 'logSoftEv' )
         Psi.cache.logMargPrObs(ii) = logMargPrObs_Prop;
         
         if strcmp( descrStr, 'birth' )
             Psi.cache.logSoftEv{ii} = logSoftEv;
         end
+    else
+        Psi.cache.logMargPrObs(ii) = logMargPrObs_Prop;
+        Psi.cache.logSoftEv{ii} = logSoftEv;
     end
     
     if strcmp( descrStr,'death')

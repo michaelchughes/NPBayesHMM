@@ -114,3 +114,4 @@ switch obsType
 end
 
 hold off;
+drawnow;

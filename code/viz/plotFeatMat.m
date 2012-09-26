@@ -24,6 +24,8 @@ if isstruct( varargin{1} )
          objIDs = varargin{ll};
        end
     end
+elseif isnumeric( varargin{1} ) && size( varargin{1}, 1) > 1
+    F = varargin{1};
 else
     jobID = varargin{1};
     taskID = varargin{2};
@@ -62,8 +64,10 @@ end
 F = F(objIDs,:);
 F_used = F_used(objIDs,:);
 
-figure;
 imagesc(F+F_used, [0 2]);
-   
+set( gca, 'YTick', 1:length(objIDs), 'YTickLabel', objIDs );
+xlabel( 'behaviors', 'FontSize', 20);
+ylabel( 'data sequences', 'FontSize', 20 );
+set( gca, 'FontSize', 16 );
 colormap bone;
 colorbar(  'YTick', [0 1 2],       'YTickLabel', {'Disabled', 'Available', 'Active'});

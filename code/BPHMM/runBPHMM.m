@@ -30,9 +30,6 @@ algParams   = sanitizeUserInput( algParams );
 initParams  = sanitizeUserInput( initParams );
 
 % ================================================ INTERPRET INPUT
-datasetName = dataParams{1};
-dataParams = dataParams(2:end);
-
 algDefs = defaultMCMCParams_BPHMM();
 algParams = updateParamsWithUserInput(  algDefs, algParams );
 
@@ -43,8 +40,15 @@ initDefs = defaultInitMCMC_BPHMM();
 initParams = updateParamsWithUserInput( initDefs, initParams );
 
 % ================================================= LOAD DATA
-Preproc = getDataPreprocInfo( datasetName, dataParams );
-data = loadSeqData( datasetName, Preproc );
+if isobject(dataParams)
+    data = dataParams;
+    Preproc = [];
+else
+    datasetName = dataParams{1};
+    dataParams = dataParams(2:end);
+    Preproc = getDataPreprocInfo( datasetName, dataParams );
+    data = loadSeqData( datasetName, Preproc );
+end
 
 if outParams.doPrintHeaderInfo
     fprintf('Dataset Summary: \n\t %d time series items \n', data.N );
@@ -72,7 +76,7 @@ randomseed( [SEED 1 2] );
 % ================================================= INITIALIZE MODEL
 % Note: InitFunc will often use own random seed (reset internally only)
 %   so that different sampling algs can be compared on *same* init state
-[Psi, algParams, outParms] = initParams.InitFunc( data, model, initParams, algParams, outParams );
+[Psi, algParams, outParams] = initParams.InitFunc( data, model, initParams, algParams, outParams );
 
 % ================================================= RUN INFERENCE
 if isfield( algParams, 'TimeLimit' ) && ~isempty( algParams.TimeLimit )

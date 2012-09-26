@@ -1,4 +1,4 @@
-function [data, PsiTrue] = genToySeqData_Gaussian( nStates, nDim, N, T)
+function [data, PsiTrue] = genToySeqData_Gaussian( nStates, nDim, N, T, pIncludeFeature)
 % INPUTS ----------------------------------------------------------
 %    nStates = # of available Markov states
 %    nDim = number of observations at each time instant
@@ -22,7 +22,9 @@ else
     doVaryLength = 0;
 end
 
-pIncludeFeature = 0.75;
+if ~exist( 'pIncludeFeature', 'var' )
+    pIncludeFeature = 0.75;
+end
 pSelfTrans = 1-(pIncludeFeature*nStates)/T;
 
 % Create initial state distribution (uniform)
@@ -103,8 +105,12 @@ for i = 1:N
         kk = randsample( nStates, 1);
         mask(  kk  ) = 1;
     end
+    if i == 1
+        mask=true(1,nStates);
+    end
+    
     F(i,:) = mask;
-     
+    
     zTrue = zeros(1,Ti);
     X = zeros( nDim, Ti );
     for t = 1:Ti
@@ -128,8 +134,13 @@ end
 curStream = RandStream.getDefaultStream();
 curStream.State = entryState;
 
-PsiTrue.F = F;
-PsiTrue.Px = Px;
+for ii = 1:N
+    PsiTrue.F(ii, unique( data.zTrue(ii) ) ) = 1;
+end
+for kk = 1:nStates
+    PsiTrue.theta(kk).mu = Px.Mu(kk,:);
+    PsiTrue.theta(kk).invSigma = inv( Px.Sigma(:,:,kk) );
+end
 PsiTrue.Pz = Pz;
 PsiTrue.z = zTrue;
 
