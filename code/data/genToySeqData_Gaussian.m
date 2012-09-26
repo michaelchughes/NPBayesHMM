@@ -121,7 +121,7 @@ for i = 1:N
        X(:,t) = mvnrnd( Px.Mu(zcur,:),  Px.Sigma(:,:,zcur) );
            
     end
-    data = data.addSeq( X, zTrue );
+    data = data.addSeq( X, num2str(i), zTrue );
 end
 
 % ---------------------------------------------------------  Reset stream

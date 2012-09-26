@@ -12,6 +12,7 @@ classdef SeqData
         Ts;
         aggTs;
         zTrueAll;
+        seqNames;
     end
     methods
 
@@ -26,11 +27,12 @@ classdef SeqData
                 obj.aggTs = [0 cumsum(obj.Ts)];
                 for ii = 1:obj.N
                     obj.Xdata( :, obj.aggTs(ii)+1:obj.aggTs(ii+1) ) = varargin{ii};
-                end
+                end                
             else
                 obj.N = 0;
                 obj.D = 0;
                 obj.aggTs = 0;
+                obj.seqNames = {};
             end
             
         end
@@ -60,13 +62,22 @@ classdef SeqData
             Xseq= obj.Xdata( :, obj.aggTs(ii)+1:obj.aggTs(ii+1) );
         end
         
-        function obj = addSeq( obj, seqData, zTrue )
+        function name = name( obj, ii );
+            name = obj.seqNames{ii};
+        end
+        
+        function obj = addSeq( obj, seqData, name, zTrue )
             T=size( seqData, 2 );
             obj.N = obj.N+1;
             obj.D = size( seqData,1);
             obj.Ts(end+1) = T;
             obj.aggTs(end+1) = obj.aggTs(end)+T;
             obj.Xdata( :, obj.aggTs(end-1)+1:obj.aggTs(end) ) = seqData;
+            if exist( 'name', 'var')
+                obj.seqNames{end+1} = name;
+            else
+                obj.seqNames{end+1} = num2str( obj.N );
+            end
             if exist( 'zTrue','var')
                 obj.zTrueAll( obj.aggTs(end-1)+1:obj.aggTs(end) )    = zTrue;
             end
