@@ -30,7 +30,7 @@ for ii=objIDs
         continue;
     end
     
-    if isfield( Psi.cache, 'logSoftEv' )
+    if isfield( Psi, 'cache') && isfield(Psi.cache, 'logSoftEv' )
         logSoftEv = Psi.cache.logSoftEv{ii};
     else
         logSoftEv = Psi.ThetaM.calcLogSoftEv( ii, data, ks );
