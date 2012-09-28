@@ -27,6 +27,11 @@ local/
 *.DS_Store
 .*.swp
 
+# Exclude mocap files
+*.amc
+*.asf
+*.key
+
 # Exclude videos
 *.avi
 *.swf
