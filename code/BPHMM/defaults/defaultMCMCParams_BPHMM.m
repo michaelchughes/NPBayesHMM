@@ -7,6 +7,8 @@ algP.doSampleFShared = 1;
 algP.doSampleFUnique = 1;
 algP.doSplitMerge = 0;
 algP.doSplitMergeRGS = 0;
+algP.doSMNoQRev = 0; % ignore proposal prob in accept ratio... not valid!
+
 
 algP.SM.featSelectDistr = 'splitBias+margLik';
 algP.SM.doSeqUpdateThetaHatOnMerge = 0;
@@ -29,6 +31,7 @@ algP.HMM.var_alpha = 2;
 algP.HMM.var_kappa = 10;
 
 % Reversible Jump Proposal settings
+algP.RJ.doHastingsFactor = 1;
 algP.theta.birthPropDistr = 'DataDriven';
 algP.theta.minW = 15; 
 algP.theta.maxW = 100;

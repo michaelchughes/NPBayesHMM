@@ -19,12 +19,21 @@ classdef ARSeqData < SeqData
     end
     methods
         function obj = ARSeqData( varargin )
-            obj = obj@SeqData( varargin(2:end) );
-            obj.R = varargin{1};
-            if ~isempty( obj.Xdata )
-            obj.XprevR = obj.Xdata(:, 1:end-obj.R);
-            obj.Xdata = obj.Xdata( :, obj.R+1:end );
-           end 
+            obj.R = varargin{1};                
+            if length( varargin ) >= 2
+                if isobject( varargin{2} )
+                    Q = varargin{2};
+                else
+                    Q = obj@SeqData( varargin(2:end) );
+                end
+                N = Q.N;
+                
+                for ii = 1:N
+                    obj = addSeq( obj, Q.seq(ii), Q.name(ii), Q.zTrue(ii) );
+                end
+                
+            end
+            
         end
         
         function retStr = toString(obj )
@@ -46,14 +55,14 @@ classdef ARSeqData < SeqData
         % Add particular sequence's observed data to this collection
         %   Ensure that the data is preprocessed appropriately
         %     so that we obtain the correct AR stats.
-        function obj = addSeq( obj, seqData, zTrue )
+        function obj = addSeq( obj, seqData, name, zTrue )
             R = obj.R;
             T=size( seqData, 2 )-R;
             obj.N = obj.N+1;
             obj.D = size( seqData,1);
             obj.Ts(end+1) = T;
             obj.aggTs(end+1) = obj.aggTs(end)+T;
-            
+            obj.seqNames{end+1} = name;
             obj.Xdata( :, obj.aggTs(end-1)+1:obj.aggTs(end) ) = seqData(:,R+1:end);
             Xprev = seqData(:,1:end-1);
             XprevR = zeros( obj.D*obj.R, T);
@@ -65,5 +74,6 @@ classdef ARSeqData < SeqData
                 obj.zTrueAll( obj.aggTs(end-1)+1:obj.aggTs(end) )    = zTrue(R+1:end);
             end
         end
+        
     end
 end

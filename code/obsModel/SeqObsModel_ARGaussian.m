@@ -137,8 +137,6 @@ classdef SeqObsModel_ARGaussian < SeqObsModel
         function PP = getPosteriorParams( obj, Xstats )
             if Xstats.nObs > 0
                 degFreeN = Xstats.nObs + obj.prior.degFree;
-                %invAScaleMatN  = inv( Xstats.YY + obj.prior.invAScaleMat );
-                %MeanMatN = (Xstats.XY +obj.prior.MeanMat) * invAScaleMatN; 
                 
                 MK  = obj.prior.MeanMat*obj.prior.invAScaleMat;
                 MKM = MK*obj.prior.MeanMat';
@@ -146,10 +144,10 @@ classdef SeqObsModel_ARGaussian < SeqObsModel
                 Syy = Xstats.YY + obj.prior.invAScaleMat;
                 Sxy = Xstats.XY + MK;
                 
-                invAScaleMatN = inv( Syy );
-                MeanMatN  = Sxy * invAScaleMatN;
-                ScaleMatN = obj.prior.ScaleMat + Sxx - Sxy*invAScaleMatN*Sxy';
-            
+                invAScaleMatN = Syy;
+                MeanMatN  = Sxy / Syy; % Sxy * inv(Syy)
+                ScaleMatN = obj.prior.ScaleMat + Sxx - (MeanMatN)*Sxy';
+                            
                 PP.MeanMat = MeanMatN;
                 PP.invAScaleMat = invAScaleMatN;
                 PP.degFree = degFreeN;
@@ -174,7 +172,7 @@ classdef SeqObsModel_ARGaussian < SeqObsModel
                PP = obj.prior;
            end
             [sqrtSigma, sqrtInvSigma] = randiwishart( PP.ScaleMat, PP.degFree );
-            theta.A = sampleFromMatrixNormal( PP.MeanMat, sqrtSigma, chol( PP.invAScaleMat ) );
+            theta.A = sampleFromMatrixNormal( PP.MeanMat, sqrtSigma, chol( inv(PP.invAScaleMat) ) );
             theta.invSigma = sqrtInvSigma'*sqrtInvSigma;
         end
                 

@@ -122,7 +122,7 @@ classdef SeqObsModel
           [theta,PP] = obj.sampleTheta(); 
         end
         
-        function [theta,PPmix] = sampleThetaProposal_BirthDataDriven( obj, ii, data, winIDs )
+        function [theta, PPmix, choice] = sampleThetaProposal_BirthDataDriven( obj, ii, data, winIDs )
             if strcmp( class(data), 'ARSeqData' )
                 X = data.seq(ii);
                 Xprev = data.prev(ii);
@@ -132,8 +132,10 @@ classdef SeqObsModel
                 PN = obj.getPosteriorParams( obj.getXSuffStats( X(:,winIDs) ) );
             end
             if rand < 0.5
+              choice = 1;
               theta = obj.sampleTheta_FromParams(); % Prior
             else
+              choice = 2;
               theta = obj.sampleTheta_FromParams( PN ); % Posterior
             end
             PPmix(1) = obj.prior;

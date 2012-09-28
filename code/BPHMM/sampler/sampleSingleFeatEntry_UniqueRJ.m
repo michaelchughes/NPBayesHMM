@@ -39,11 +39,11 @@ propEta_ii = TransM.sampleEtaProposal_UniqueBirth( ii );
 % -------------------------------  Theta prop
 switch algParams.theta.birthPropDistr
     case {'Prior','prior'}
-        [thetaStar,PP] = ThetaM.sampleThetaProposal_BirthPrior( );
+        [thetaStar] = ThetaM.sampleThetaProposal_BirthPrior( );
         propThetaM = ThetaM.insertTheta( thetaStar );
     case {'DataDriven', 'DD', 'datadriven'}
         [wstart, wend, L] = drawRandomSubwindow( data.Ts(ii), algParams.theta.minW, algParams.theta.maxW );
-        [thetaStar,PPmix] = ThetaM.sampleThetaProposal_BirthDataDriven( ii, data, wstart:wend );
+        [thetaStar,PPmix, choice] = ThetaM.sampleThetaProposal_BirthDataDriven( ii, data, wstart:wend );
         propThetaM = ThetaM.insertTheta( thetaStar );
 end
 
@@ -72,9 +72,13 @@ if MoveType == 1
     
     switch algParams.theta.birthPropDistr
         case {'DataDriven', 'DD', 'datadriven'}   
+            if algParams.RJ.doHastingsFactor
             logPrThetaStar_prior = propThetaM.calcLogPrTheta( thetaStar );
             logPrThetaStar_prop  = propThetaM.calcLogPrTheta_MixWithPrior( thetaStar, PPmix );
             logPrTheta_Diff = logPrThetaStar_prior - logPrThetaStar_prop;
+            else
+                logPrTheta_Diff = 0;
+            end
         case {'Prior', 'prior'}
             logPrTheta_Diff = 0;
     end
@@ -102,9 +106,13 @@ else
     % ----------------------------------------------- build theta
     switch algParams.theta.birthPropDistr
         case {'DataDriven', 'DD', 'datadriven'} 
-            logPrThetaKK_prior = propThetaM.calcLogPrTheta( propThetaM.theta(kk) );
-            logPrThetaKK_prop  = propThetaM.calcLogPrTheta_MixWithPrior( propThetaM.theta(kk), PPmix );
-            logPrTheta_Diff = logPrThetaKK_prop - logPrThetaKK_prior;
+            if algParams.RJ.doHastingsFactor
+                logPrThetaKK_prior = propThetaM.calcLogPrTheta( propThetaM.theta(kk) );
+                logPrThetaKK_prop  = propThetaM.calcLogPrTheta_MixWithPrior( propThetaM.theta(kk), PPmix );
+                logPrTheta_Diff = logPrThetaKK_prop - logPrThetaKK_prior;
+            else
+                logPrTheta_Diff=0;
+            end
         case {'Prior', 'prior'}
             logPrTheta_Diff = 0;
     end

@@ -1,0 +1,12 @@
+JumpJack
+Jog
+Squat
+KneeRaise
+ArmCircle
+Twist
+SideReach
+Box
+UpDown
+ToeTouch1
+SideBend
+ToeTouch2

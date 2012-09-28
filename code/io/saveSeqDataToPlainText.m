@@ -24,7 +24,7 @@ end
 
 if ~isempty( data.zTrue(1) )
    fid = fopen( fullfile( outputPath, ['zTrue.dat'] ), 'w');
-   namefid = fopen( fullfile( outputPath, ['names.txt'] ), 'w');
+   namefid = fopen( fullfile( outputPath, ['SeqNames.txt'] ), 'w');
    for ii = 1:data.N
        zTrue = data.zTrue(ii);
        FMT_STR = [repmat('%d ', 1, data.Ts(ii)) '\n'];

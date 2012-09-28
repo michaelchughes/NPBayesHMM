@@ -135,7 +135,7 @@ for i = 1:N
         xprev = [X(:,t); xprev( 1:(end-nDim) ) ];
         
     end
-    data = data.addSeq( X, zTrue );
+    data = data.addSeq( X, num2str(i), zTrue );
 end
 
 % ---------------------------------------------------------  Reset stream

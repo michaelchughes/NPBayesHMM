@@ -1,13 +1,10 @@
 function [logPr] = calcLogPrMatrixNormalInvWishart( A, invSigma, PP )
 
-logPrSigma = calcLogPrInvWishart( invSigma, PP );
+[logPrSigma, cholInvSigma] = calcLogPrInvWishart( invSigma, PP );
 
-cholInvSigma = chol( invSigma );
 logDetInvSigma = 2*sum( log( diag( cholInvSigma ) ) );
 logDetSigma    = -logDetInvSigma; % det(S) = 1/det(inv(S))
 
-v = PP.degFree;
-SM  = PP.ScaleMat;
 CC = PP.invAScaleMat;
 [D DR] = size( CC );
 

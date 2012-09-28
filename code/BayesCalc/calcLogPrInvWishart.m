@@ -1,4 +1,4 @@
-function [logPrSigma] = calcLogPrInvWishart( invSigma, PP )
+function [logPrSigma, cholInvSigma] = calcLogPrInvWishart( invSigma, PP )
 % Compute prob. of drawing inv( invSigma ) from InvWishart distr.
 %       given hyperparameters PP
 % INPUT:

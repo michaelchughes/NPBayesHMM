@@ -10,7 +10,7 @@ if ~exist( outputPath, 'dir' )
 end
 
 
-namepath = fullfile(outputPath, 'names.txt' );
+namepath = fullfile(outputPath, 'SeqNames.txt' );
 namefid = fopen(namepath);
 Names = textscan( namefid, '%s' );
 Names = Names{1};
@@ -19,7 +19,7 @@ fclose(namefid);
 ztruepath = fullfile(outputPath, 'zTrue.dat' );
 if exist( ztruepath, 'file' )
     fid = fopen( ztruepath );
-    line = fgetl(fid)
+    line = fgetl(fid);
     ii=1;
     while line >= 0 %true until EOF reached
        zTrue{ii} = str2num( line );
