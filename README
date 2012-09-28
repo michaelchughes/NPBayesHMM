@@ -1,17 +1,21 @@
 NPBayesHMM : Nonparametric Bayesian HMM toolbox, for Matlab
 Website: http://michaelchughes.github.com/NPBayesHMM/
-Author:  Mike Hughes (mike@michaelchughes.com). 
+Author:  Mike Hughes (www.michaelchughes.com)
+Please email all comments/questions to mike <AT> michaelchughes.com
 
 This toolbox provides code for running Markov chain Monte Carlo (MCMC) posterior
 inference for a variety of NPBayes models for sequential data.  Currently, only 
 the Beta Process (BP) HMM is fully supported, but releases for HDP-HMM and other 
 models are planned.
 
-The repository is organized simply.  
+The repository is organized as follows:  
   code/ contains relevant Matlab code. This should be the working dir in Matlab.
-   .../demo/ in particular has some easy demo scripts.
-  doc/  contains human-readable documentation, including some examples.
-     
+        within code/, you can find a fast intro script in code/demo/EasyDemo.m
+  doc/  contains human-readable documentation.
+        QuickStartGuide.pdf in particular describes how to configure the code.
+  data/ contains one example dataset (6 Mocap sequences of various exercises)
+        See the demos for how to run posterior inference on this data. 
+      
 Look for additional documentation and occasional updates on github:
    https://github.com/michaelchughes/NPBayesHMM/
      
@@ -19,3 +23,13 @@ If you find this toolbox useful, please cite our NIPS 2012 paper.
 
 This software is released under the Simple Public License 2.0, a permissive, 
 copyleft license.  Please see the LICENSE file for details.
+
+Acknowledgements:
+This code is inspired by (and heavily based upon) the
+BP-AR-HMM toolbox, released by Emily Fox. Most functions have been completely 
+re-written for speed, readability, and extensibility, but Emily deserves most
+credit for coming up with some original solid inference algorithms.
+
+I also thank Tom Minka for his excellent Lightspeed toolbox, 
+and the development team at Eigen for a blazingly-fast matrix library,
+which made the HMM dynamic programming routines much much faster. 

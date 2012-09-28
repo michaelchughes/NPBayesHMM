@@ -4,7 +4,8 @@
 % Inf algs: Prior, Data-Driven, and Split-Merge (SM) moves.
 %    see Hughes, Fox, and Sudderth (2012) for algorithm details.
 % Each alg is given three random initializations.
-%   and then run for 100 iterations from each.
+%   each of which starts from just one behavior used by all sequences.
+% Each chain then runs for 100 iterations.
 % We can examine the trace plots of joint log probability
 %   to compare the different methods.
 %Expected outcome:
@@ -55,8 +56,10 @@ plotLogPr( jobIDs, 1:nTask, infAlgs );
 figure;
 subplot(1,3,1);
 plotEmissionParams( jobIDs(1), 1);
+title( 'Prior' );
 subplot(1,3,2);
 plotEmissionParams( jobIDs(2), 1);
+title( 'DataDriven' );
 subplot(1,3,3);
 plotEmissionParams( jobIDs(3), 1);
-
+title( 'Split-Merge' );

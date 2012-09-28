@@ -76,21 +76,22 @@ Each individual run of the sampler is given a jobID and a taskID.  We'll treat t
 \subsection{ Running an MCMC Simulation }
 To actually run an MCMC simulation, we use the versatile entry-point function \texttt{runBPHMM}, which is called with five arguments:
 
-\texttt{ >> runBPHMM(  dataP,  modelP, {jobID, taskID}, algP, initP ) }
+\texttt{ >> runBPHMM(  dataP,  modelP, \{jobID, taskID\}, algP, initP ) }
 
 Here's an intuitive example, that runs a short simulation on some toy data with Gaussian emissions.  You can see each of these arguments in action.
 
 \begin{verbatim}
 dataP = {'SynthGaussian', 'T', 100};
 modelP = {'bpM.gamma', 5 };
+outP = {jobID, taskID, 'saveEvery', 5};
 algP = {'Niter', 100, 'doSplitMerge', 0};
 initP = {'InitFunc', @initBPHMMCheat };
-runBPHMM(  dataP,  modelP, {jobID, taskID}, algP, initP );
+runBPHMM(  dataP,  modelP, outP, algP, initP );
 \end{verbatim}
 
-As you can see, each of these parameters (dataP,modelP) is a cell array that specifies some parameters of the data, the model, the MCMC algorithm, and the initialization.  These must be in the form of Name/Value pairs, such as {'Niter', 100}, which says to set the number of iterations to 100. Only exception to the Name/Value restriction is that data params always starts with the "name" of the data, and the output parameters (3rd arg) always starts with jobID and taskID.
+As you can see, each of these parameters (\texttt{dataP,modelP}) is a cell array that specifies some parameters of the data preprocessing, the model, the MCMC algorithm, and the initialization.  These must be in the form of Name/Value pairs, such as {'Niter', 100}, which says to set the number of iterations to 100. Only exception to the Name/Value restriction is that \texttt{dataP} always starts with the name of the desired dataset, and the output parameters (\texttt{outP}) always starts with jobID and taskID.
 
-Of course, there are lots of parameters going on here.  What the NPBayesHMM toolbox does is define a \emph{huge} set of default parameters.  You can find these in \texttt{HOME/code/BPHMM/defaults/}.  All user input passed in can override *any* of these default values.  This allows keeping end-user syntax relatively clean, but still allowing lots of flexibility, such as the freedom to disable sampling of certain variables for debugging, or to change the hyperparameters of any model distribution when needed.
+Of course, there are lots of parameters in play here.  The NPBayesHMM toolbox defines a \emph{huge} set of default parameters.  You can find these in \texttt{HOME/code/BPHMM/defaults/}.  All user input passed in can override *any* of these default values.  This allows keeping end-user syntax relatively clean, but still allowing lots of flexibility, such as the freedom to disable sampling of certain variables for debugging, or to change the hyperparameters of any model distribution when needed.
 
 Here's a detailed breakdown of input parameters used by \texttt{runBPHMM}.
 \begin{enumerate}
@@ -98,31 +99,32 @@ Here's a detailed breakdown of input parameters used by \texttt{runBPHMM}.
 
 Here's where you indicate how many sequences to model, what preprocessing to apply, etc.
 
-Note that you'll need to edit these defaults when you want to study a new dataset.
+Note that you'll need to edit these defaults when you want to study a new dataset.  Alternatively, you can simply pass in a \texttt{SeqData} object instead of a cell array to run inference directly on the provided dataset.  Please see \texttt{HOME/doc/DataGuide.pdf} for details of how NPBayesHMM represents a collection of observed sequential data.
 
 Relevant defaults: \texttt{code/io/getDataPreprocInfo.m}.
 
 \item \texttt{modelP} : MCMC algorithm parameters
 
-Here's where you specify anything that influences the \emph{posterior distribution} of the data that you're trying to model.  This includes hyperparameters for the beta process, HMM transition model, and HMM emissions model.  Can be empty, \texttt{{}}, if you just want to use defaults.
+Here's where you specify anything that influences the \emph{posterior distribution} of the data that you're trying to model.  This includes hyperparameters for the beta process, HMM transition model, and HMM emissions model.  Can be empty, \texttt{\{\}}, if you just want to use defaults.
 
 Relevant defaults: \texttt{code/BPHMM/defaults/defaultModelParams\_BPHMM.m}.
 
 \item \texttt{outP}: output parameters
 
 Here's where you specify the jobID, the taskID, and anything else about how to save results to disk or display progress at standard out. 
-Always requires the first two arguments (jobID, taskID), which should't be Name/Value pairs.
+Always requires the first two arguments (\texttt{jobID, taskID}), which shouldn't be Name/Value pairs.
 
 Relevant defaults: \texttt{code/BPHMM/defaults/defaultOutputParams\_BPHMM.m}.
 
 \item \texttt{algP} : MCMC algorithm parameters
+Specifies the number of iterations, which proposal distributions to use, and whether to sample each component variable of the model (useful for debugging).
 
 Relevant defaults: \texttt{code/BPHMM/defaults/defaultMCMCParams\_BPHMM.m}.
 
 \item \texttt{initP} : MCMC initialization parameters
 Here's where we specify how to construct the initial state of the sampler.  To be versatile, we assume that the user offers a specific function for constructing this state, and this function can take a generic set of function-specific parameters.  The attribute 'InitFunc' provides the function handle of the initializer.  The rest of the fields of initP are passed along directly to this function.
 
-For example, to initialize ``from scratch'', use the function \texttt{@initBPHMMFresh}, which takes arguments that specify how many states to create, and then draws remaining parameters from their posteriors.  Alternatively, to use a known set of ground-truth labels to initialize the state sequence (and, implicitly, the feature matrix) use the function \texttt{@initBPHMMCheat}.
+For example, to initialize ``from scratch'' (the default method), use the function \texttt{@initBPHMMFresh}, which takes arguments that specify how many states to create, and then draws remaining parameters from their posteriors.  Alternatively, to use a known set of ground-truth labels to initialize the state sequence (and, implicitly, the feature matrix) use the function \texttt{@initBPHMMCheat}.
 
 Relevant defaults: \texttt{code/BPHMM/defaults/defaultInitMCMC\_BPHMM.m}.
 
@@ -153,20 +155,21 @@ where the variables \texttt{INFO},\texttt{OUT} are structs that contain all the 
 
 \section{ Visualizing Results }
 
-NPBayesHMM provides many Matlab scripts for visualizing results. These are documented here (briefly).
+NPBayesHMM provides several Matlab scripts for visualizing simulation performance. These are documented here (briefly).
 
 \subsection{ Log Probability Trace }
 
-The most important first-pass diagnostic of a sampler run is to compute the joint log probability of the configuration: $p( \mathbf{x}, \Psi)$, where $\mathbf{x}$ is the fixed data.  You can see the BPHMMintro.pdf document for details of this computation.  
+The most important first-pass diagnostic of a sampler run is to compute the joint log probability of the configuration: $p( \mathbf{x}, \Psi)$, where $\mathbf{x}$ is the fixed data \footnote{You can see the BPHMMintro.pdf document for details of this computation.}.  Watching this quantity evolve over the sampler run (especially across many chains) can indicate when mixing problems exist.  Of course,  seeing this trace plot level off at a high value does \emph{not} in general give any indication of convergence... this is one of the tricky bits about MCMC.
+
 
 To create this plot, use the function \texttt{plotLogPr}, as follows:
 
-Suppose I have three experiments, with jobIDs 1,2, and 3.  Each one was run with 10 random initializations.  To plot these all together (with legend labels 'A','B','C'), we can use the syntax
+Suppose I have three experiments, with jobIDs 1,2, and 3.  Each one was run with 10 random initializations.  To plot the joint log probability of all chains together color-coded by jobID (with legend labels 'A','B','C'), we can use the syntax
 \begin{verbatim}
 plotLogPr( [1 2 3], 1:10, {'A', 'B','C'} );
 \end{verbatim}
 
-The useful jobID, taskID organization scheme definitely shines here.
+The useful jobID, taskID organization scheme definitely shines here.  We can easily compare the mixing behavior of several different sampler settings with this command.
 
 \subsection{ State Sequences }
 
@@ -181,6 +184,9 @@ If I have a \texttt{stateSeq} variable loaded into workspace.
 \texttt{plotStateSeq( stateSeq ); }
 
 Note that if ground truth state sequence is present (in the data object), this function will automatically plot it alongside the estimated state sequence, using a relabeling scheme to align the states as best we can.
+
+\texttt{plotStateSeq( stateSeq, data ); }
+
 
 \subsection{Emission Parameters}
 
@@ -213,7 +219,7 @@ plotFeatMat( 3, 1 );
 plotFeatMat( 1, 1, 1500 );
 \end{verbatim}
 
-Note that just because $F$ has a positive entry, doesn't mean that feature is actually assigned to any single timestep within the HMM state sequence $z$.  This visualization distinguishes between ``available'' ($F_{ik}$ is positive) and ``active'' (actually used in $z$) features. 
+Note that just because $F$ has a positive entry, doesn't mean that feature is actually assigned to any single timestep within the HMM state sequence $z$.  This visualization distinguishes between ``available'' ($F_{ik}$ is positive) and ``active'' (actually used in $z$) features.  Of course, this is only possible when this function is provided the \texttt{stateSeq} function (which happens implicitly when called with a jobID and taskID). 
 
 
 \end{document}

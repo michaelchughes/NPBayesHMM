@@ -25,7 +25,7 @@ end
 if ~exist( 'pIncludeFeature', 'var' )
     pIncludeFeature = 0.75;
 end
-pSelfTrans = 1-(pIncludeFeature*nStates)/T;
+pSelfTrans = 1-(2*nStates)/T;
 
 % Create initial state distribution (uniform)
 Pz_init = ones(1, nStates);
@@ -134,6 +134,7 @@ end
 curStream = RandStream.getDefaultStream();
 curStream.State = entryState;
 
+PsiTrue.F = zeros(N, nStates);
 for ii = 1:N
     PsiTrue.F(ii, unique( data.zTrue(ii) ) ) = 1;
 end

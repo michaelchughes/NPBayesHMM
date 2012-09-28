@@ -39,6 +39,8 @@ propEta_ii = TransM.sampleEtaProposal_UniqueBirth( ii );
 % -------------------------------  Theta prop
 switch algParams.theta.birthPropDistr
     case {'Prior','prior'}
+        choice = 1;
+        wstart = 0; wend = 0;
         [thetaStar] = ThetaM.sampleThetaProposal_BirthPrior( );
         propThetaM = ThetaM.insertTheta( thetaStar );
     case {'DataDriven', 'DD', 'datadriven'}
@@ -50,7 +52,7 @@ end
 % Define prob of proposing birth move
 %   as deterministic function of the # of unique features
 PrBirth = @(uCur)1/2;
-qs = buildRJMoveDistr( uCur, PrBirth );
+qs = buildRJMoveDistr( uCur, Kii, PrBirth );
 MoveType = multinomial_single_draw( qs );
 
 if isfield( algParams, 'Debug' )
@@ -86,9 +88,10 @@ if MoveType == 1
     % Probability of birth in current config
     logQ.moveChoice = log( qs(1) );
     % Probability of killing the last feature  in proposed config
-    qsRev = buildRJMoveDistr( uNew, PrBirth );
+    qsRev = buildRJMoveDistr( uNew, Kii+1, PrBirth );
     logQ_Rev.moveChoice = log( qsRev( end )  );
     
+    RhoTerms.activeFeatIDs = kk;
 else
     % ----------------------------------------------------  Death:
     descrStr = 'death';
@@ -105,7 +108,8 @@ else
     
     % ----------------------------------------------- build theta
     switch algParams.theta.birthPropDistr
-        case {'DataDriven', 'DD', 'datadriven'} 
+        case {'DataDriven', 'DD', 'datadriven'}
+            thetaStar = propThetaM.theta(kk);
             if algParams.RJ.doHastingsFactor
                 logPrThetaKK_prior = propThetaM.calcLogPrTheta( propThetaM.theta(kk) );
                 logPrThetaKK_prop  = propThetaM.calcLogPrTheta_MixWithPrior( propThetaM.theta(kk), PPmix );
@@ -120,9 +124,10 @@ else
     % Probability of death  in current config
     logQ.moveChoice = log( qs(MoveType) );
     % Probability of birth in proposed config
-    qsRev = buildRJMoveDistr( uNew, PrBirth );
+    qsRev = buildRJMoveDistr( uNew, Kii-1, PrBirth );
     logQ_Rev.moveChoice = log( qsRev( 1 )  );
     
+    RhoTerms.activeFeatIDs = kk;
 end
 
 % Compute Joint Log Probability of Proposed/Current configurations
@@ -162,6 +167,9 @@ RhoTerms.logMargPrObs_Cur  = logMargPrObs_Cur;
 RhoTerms.logPrThetaDiff = logPrTheta_Diff;
 RhoTerms.logQMove.fwd = logQ.moveChoice;
 RhoTerms.logQMove.rev = logQ_Rev.moveChoice;
+RhoTerms.thetaStar = thetaStar;
+RhoTerms.choice = choice;
+RhoTerms.window = [wstart wend];
 
 rho = exp(log_rho_star);
 assert( ~isnan(rho), 'ERROR: Accept ratio *rho* for unique features should never be NaN')
