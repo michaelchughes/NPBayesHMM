@@ -31,7 +31,7 @@ plotData( data, 3 );
 
 % Visualize the "true" generating parameters
 % Feat matrix F (binary 5 x 4 matrix )
-figure('Units', 'normalized', 'Position', [0 0.5 0.5 0.5] );
+figure('Units', 'normalized', 'Position', [0 0.5 0.3 0.5] );
 plotFeatMat( TruePsi.F );
 title( 'True Feature Matrix', 'FontSize', 20 );
 
@@ -78,3 +78,6 @@ title( 'Theta (@ iter 100)', 'FontSize', 20 );
 plotStateSeq( CH.Psi( CH.iters.Psi==100 ), [1 3] );
 set( gcf, 'Units', 'normalized', 'Position', [0.1 0.25 0.75 0.5] );
 title('Est. Z : Seq 3', 'FontSize', 20 );
+
+fprintf( 'Remember: actual labels for behaviors are *irrelevant* from model perspective\n');
+fprintf( '  what matters is aligned behaviors are consistently assigned to same datapoints as ground truth\n' );

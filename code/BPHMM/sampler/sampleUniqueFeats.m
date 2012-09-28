@@ -1,4 +1,4 @@
-function [Psi, Stats] = sampleUniqueFeats( Psi, data, algParams )
+function [Psi, Stats, RhoTerms] = sampleUniqueFeats( Psi, data, algParams )
 % Sample *unique* features for each time series, 
 %   using reversible jump moves that propose adding/deleting unique feat.
 %   from each sequence.
@@ -19,7 +19,6 @@ Stats.DEL.nTotal = 0;
 % Fill in new values!!
 for ii = 1:size( Psi.F, 1)
     [Psi, RhoTerms] = sampleSingleFeatEntry_UniqueRJ( ii, Psi, data, algParams );
-    
     
     if RhoTerms.doBirth
         Stats.ADD.nTotal = Stats.ADD.nTotal+1;
