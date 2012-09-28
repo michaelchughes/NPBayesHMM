@@ -1,4 +1,5 @@
 NPBayesHMM : Nonparametric Bayesian HMM toolbox, for Matlab
+Website: http://michaelchughes.github.com/NPBayesHMM/
 Author:  Mike Hughes (mike@michaelchughes.com). 
 
 This toolbox provides code for running Markov chain Monte Carlo (MCMC) posterior
