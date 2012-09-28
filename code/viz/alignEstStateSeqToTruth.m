@@ -1,9 +1,11 @@
-function [zEstR, TrueAlphaNames, EstAlphaNames] = alignEstStateSeqToTruth( zEst, zTrue, alignParams )
+function [zEstR, TrueAlphaNames, EstAlphaNames] = alignEstStateSeqToTruth( zEst, zTrue, alignP )
 % Determines best alignment for each estimated state to ground truth
 % Each true state is aligned to potentially several estimated states
 %   with the option that no est state aligns properly
 % Each estimated state is aligned to at most 1 true state
 %   with option that if insufficient overlap exists, we mark it as "unmatched"
+% This alignment is good for *plotting* the stateSeq
+%   but not good at all for computing Hamming distance
 
 % To qualify as aligned, an estimated state must have at least
 %   OVERLAP_THR fraction of its labels matched to the ground truth sequence
