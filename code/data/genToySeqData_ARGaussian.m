@@ -27,7 +27,7 @@ else
 end
 
 pIncludeFeature = 0.75;
-pSelfTrans = 1-(pIncludeFeature*nStates)/T;
+pSelfTrans = 1-(2*nStates)/T;
 
 % Create initial state distribution (uniform)
 Pz_init = ones(1, nStates);
