@@ -42,9 +42,10 @@ else
     settings.statsEvery = 10;
 end
 
-settings.Profiler.on           = 0;
-settings.Profiler.baseDir      = getUserSpecifiedPath( 'ProfileResults' );
-settings.Profiler.filename     = 'defaultProfile';
-settings.Profiler.stopAfter    = 5;
-
 settings.doPrintHeaderInfo = 1;
+
+%TO DO: Add profiling capability
+%settings.Profiler.on           = 0;
+%settings.Profiler.baseDir      = getUserSpecifiedPath( 'ProfileResults' );
+%settings.Profiler.filename     = 'defaultProfile';
+%settings.Profiler.stopAfter    = 5;
