@@ -79,7 +79,7 @@ if MoveType == 1
             logPrThetaStar_prop  = propThetaM.calcLogPrTheta_MixWithPrior( thetaStar, PPmix );
             logPrTheta_Diff = logPrThetaStar_prior - logPrThetaStar_prop;
             else
-                logPrTheta_Diff = 0;
+                logPrTheta_Diff = -20;
             end
         case {'Prior', 'prior'}
             logPrTheta_Diff = 0;
@@ -115,7 +115,7 @@ else
                 logPrThetaKK_prop  = propThetaM.calcLogPrTheta_MixWithPrior( propThetaM.theta(kk), PPmix );
                 logPrTheta_Diff = logPrThetaKK_prop - logPrThetaKK_prior;
             else
-                logPrTheta_Diff=0;
+                logPrTheta_Diff=-20;
             end
         case {'Prior', 'prior'}
             logPrTheta_Diff = 0;
