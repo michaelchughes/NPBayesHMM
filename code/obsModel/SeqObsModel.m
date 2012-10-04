@@ -109,12 +109,12 @@ classdef SeqObsModel
         %  logPrDiff = logPrProp - logPrCur, where propose = merge feats ki,kj
         %                                          current = keep ki,kj separate
         function [logPrDiff] = calcMargLikRatio_MergeFeats(obj, data, stateSeq, ki, kj )
-            logPrCur = obj.calcMargPrData( data, stateSeq, [ki, kj] );
+            logPrCur = obj.calcMargPrData( [], [], [ki, kj] );
             propStateSeq = stateSeq;
             for ii = 1:length(propStateSeq)
                 propStateSeq(ii).z( stateSeq(ii).z==kj ) = ki;
             end
-            logPrProp = obj.calcMargPrData( data, propStateSeq, [ki] );
+            logPrProp = obj.calcMargPrData( data, propStateSeq, ki );
             logPrDiff = logPrProp - logPrCur;
         end
         

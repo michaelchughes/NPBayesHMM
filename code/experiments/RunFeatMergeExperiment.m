@@ -16,11 +16,11 @@ switch dataName
     case {'Multinomial', 'Mult'}
         dataP = {'Synth', 'nObj', 400, 'nStates', 8, 'V', 1000, 'obsDim', -5, 'T', 200, 'pEmitFavor', 0.9};
     case {'Gaussian'}        
-        dataP = {'SynthGaussian', 'nObj', 400, 'nStates', 8, 'obsDim', 8, 'T', 200 };
+        dataP = {'SynthGaussian', 'nObj', 600, 'nStates', 8, 'obsDim', 8, 'T', 200 };
         modelP = {'bpM.gamma', 2};
     case {'AR', 'AR-Gaussian'}        
-        dataP = {'SynthAR', 'nObj', 400, 'nStates', 8, 'obsDim', 5, 'T', 200, 'R', 1};
-        modelP = {'bpM.gamma', 2};
+        dataP = {'SynthAR', 'nObj', 200, 'nStates', 8, 'obsDim', 5, 'T', 1000, 'R', 1};
+        modelP = {'bpM.gamma', 2, 'hmmM.alpha', 1, 'hmmM.kappa', 50};
 end
 
 TimeLimit = force2double( TimeLimit );

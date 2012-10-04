@@ -1,9 +1,17 @@
+#!/bin/sh
+# s2gridToyFeatMerge.sh <dataName> <doSubmit>
 # WARNING: This script will only use the "ang" group of machines"
 
-TimeLimit=3500
+EXPECTED_ARGS=1
+E_BADARGS=65
+if [ $# -lt $EXPECTED_ARGS ]  # use -lt instead of <
+then
+  echo "Usage: `basename $0` <dataName=AR>"
+  exit $E_BADARGS
+fi
 
-for DATANAME in 'AR' #'Gaussian'
-do 
+TimeLimit=3500
+DATANAME=$1
 
 for infName in 'Prior' 'SM' 'SMmergeseq'
 do
@@ -12,13 +20,31 @@ do
 
   echo $COMMAND
 
-  #continue;
+  if [ $# -eq 2 ]
+  then
+    qsub -t 1-$2 $COMMAND
+  else
+    continue
+  fi
 
-  qsub -t 1-3 $COMMAND
-
-done
 done
 exit
+##########################################################################  AR N=200, T=1000, kappa=50 (nearly same as orig. experiment)
+runToyDataFeatMerge.sh AR Prior 3500
+Your job-array 1637996.1-2:1 ("runToyDataFeatMerge.sh") has been submitted
+runToyDataFeatMerge.sh AR SM 3500
+Your job-array 1637997.1-2:1 ("runToyDataFeatMerge.sh") has been submitted
+runToyDataFeatMerge.sh AR SMmergeseq 3500
+Your job-array 1637998.1-2:1 ("runToyDataFeatMerge.sh") has been submitted
+
+
+##########################################################################  Gauss N=600, T=200
+runToyDataFeatMerge.sh Gaussian Prior 3500
+Your job-array 1637993.1-2:1 ("runToyDataFeatMerge.sh") has been submitted
+runToyDataFeatMerge.sh Gaussian SM 3500
+Your job-array 1637994.1-2:1 ("runToyDataFeatMerge.sh") has been submitted
+runToyDataFeatMerge.sh Gaussian SMmergeseq 3500
+Your job-array 1637995.1-2:1 ("runToyDataFeatMerge.sh") has been submitted
 
 ##########################################################################  Gauss N=400, T=200
 runToyDataFeatMerge.sh Gaussian Prior 3500
@@ -36,3 +62,4 @@ Your job-array 1635155.1-3:1 ("runToyDataFeatMerge.sh") has been submitted
 runToyDataFeatMerge.sh AR SMmergeseq 3500
 Your job-array 1635156.1-3:1 ("runToyDataFeatMerge.sh") has been submitted
 
+OLD REPEAT JOB        jobIDs = [806212:806214];
