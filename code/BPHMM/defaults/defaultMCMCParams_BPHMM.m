@@ -32,7 +32,7 @@ algP.HMM.var_kappa = 10;
 
 % Reversible Jump Proposal settings
 algP.RJ.doHastingsFactor = 1;
-algP.theta.birthPropDistr = 'DataDriven';
-algP.theta.minW = 15; 
-algP.theta.maxW = 100;
+algP.RJ.birthPropDistr = 'DataDriven';
+algP.RJ.minW = 15; 
+algP.RJ.maxW = 100;
 

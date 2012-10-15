@@ -196,11 +196,14 @@ classdef HMMTransModel
             Eta(Kii+1, 1:Kii) = newEtaRow;
         end
         
-        function logPr = calcMargPrStateSeq( obj, F, stateSeq )
+        function logPr = calcMargPrStateSeq( obj, F, stateSeq, objIDs )
+            if ~exist('objIDs','var')
+                objIDs = 1:size(F,1);
+            end
             obj = updateAllZSuffStats( obj, F, stateSeq );
             logPrZ = zeros(1, obj.N);
-            for ii = 1:size(F,1)
-            logPrZ(ii) = calcMargLogPrData_MultinomialDirichletSticky( obj.Zstats(ii).Nz, obj.prior.alpha, obj.prior.kappa );
+            for ii = objIDs
+                logPrZ(ii) = calcMargLogPrData_MultinomialDirichletSticky( obj.Zstats(ii).Nz, obj.prior.alpha, obj.prior.kappa );
             end
             logPr = sum( logPrZ );
         end

@@ -67,7 +67,7 @@ classdef SeqObsModel_Gaussian < SeqObsModel
                 Xkk = data.seq(ii);
                 Xkk = Xkk(:, stateSeq(ii).z == kk );
                 nNew = size(Xkk,2);
-                if obj.Xstats(kk).nObs == 0
+                if length(obj.Xstats)<kk || obj.Xstats(kk).nObs == 0
                     obj.Xstats(kk).nObs = nNew;
                     obj.Xstats(kk).Xsum = sum(Xkk,2);
                     obj.Xstats(kk).XXsum = Xkk*Xkk';

@@ -16,7 +16,7 @@ if algP.doSampleFShared
 end
 
 if algP.doSampleFUnique
-    [Psi, Stats.FRJ] = sampleUniqueFeats( Psi, data, algP );
+    [Psi, Stats.FRJ] = sampleUniqueFeats( Psi, data, algP, 0 );
 end
 
 if algP.doSampleZ
@@ -48,6 +48,14 @@ elseif algP.doSMNoQRev
         SM.(tS.moveDescr).nTotal  = SM.(tS.moveDescr).nTotal + 1;
     end
     Stats.SM = SM;
+end
+
+
+if algP.doSampleUniqueZ
+    % Warning: after a successful accept,
+    %   the thetas and etas held in "Psi" are no good!
+    % MUST resample immediately.
+    [Psi, Stats.RJZ] = sampleUniqueFeats( Psi, data, algP, 1);
 end
 
 if algP.doSampleEta

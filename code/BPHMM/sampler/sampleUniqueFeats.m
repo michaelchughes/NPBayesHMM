@@ -1,4 +1,4 @@
-function [Psi, Stats, RhoTerms] = sampleUniqueFeats( Psi, data, algParams )
+function [Psi, Stats, RhoTerms] = sampleUniqueFeats( Psi, data, algParams, doZMove, objIDs )
 % Sample *unique* features for each time series, 
 %   using reversible jump moves that propose adding/deleting unique feat.
 %   from each sequence.
@@ -11,14 +11,24 @@ function [Psi, Stats, RhoTerms] = sampleUniqueFeats( Psi, data, algParams )
 %  Stats : struct that summarizes reversible jump performance
 %           counts # birth (ADD) and death (DEL) attempts and acceptances
 
+if ~exist( 'objIDs', 'var')
+    objIDs = 1:data.N;
+end
+
+
 Stats.ADD.nAccept = 0;
 Stats.ADD.nTotal = 0;
 Stats.DEL.nAccept = 0;
 Stats.DEL.nTotal = 0;
 
-% Fill in new values!!
-for ii = 1:size( Psi.F, 1)
-    [Psi, RhoTerms] = sampleSingleFeatEntry_UniqueRJ( ii, Psi, data, algParams );
+for ii = objIDs
+    if doZMove
+        [Psi, RhoTerms] = sampleSingleFeat_UniqueRJStateSeq( ii, Psi, data, algParams );
+    else
+        [Psi, RhoTerms] = sampleSingleFeatEntry_UniqueRJ( ii, Psi, data, algParams );
+    end
+    
+    
     
     if RhoTerms.doBirth
         Stats.ADD.nTotal = Stats.ADD.nTotal+1;

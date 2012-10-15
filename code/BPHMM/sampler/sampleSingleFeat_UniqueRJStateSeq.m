@@ -1,5 +1,5 @@
 function [Psi, RhoTerms] = ...
-    sampleSingleFeatEntry_UniqueRJ( ii, Psi, data, algParams )
+    sampleSingleFeat_UniqueRJStateSeq( ii, Psi, data, algParams )
 % Sample a unique entry in the feature vector of sequence "ii"
 % Uses reversible jump to either
 %   Create new feature ("birth")
@@ -10,9 +10,6 @@ function [Psi, RhoTerms] = ...
 %  data : SeqObs data object
 %           data for sequence ii accessed by call "data.seq(ii)"
 %  algParams : param struct specifies details of proposal move
-%      algParams.theta.birthPropDistr can be any of:
-%      --- 'prior'  : emit param thetaStar drawn from prior
-%      --- 'data-driven' : emit param thetaStar draw from data posterior
 %OUTPUT
 %  Psi : new model config (with potentially new unique features for ii )
 %  RhoTerms : some stats about the MH proposal and what kind of move occurs
@@ -20,8 +17,10 @@ function [Psi, RhoTerms] = ...
 
 % ========================================================  UNPACK
 F = Psi.F;
-TransM = Psi.TransM;
-ThetaM = Psi.ThetaM;
+
+propStateSeq = Psi.stateSeq;
+propF = F;
+
 gamma  = Psi.bpM.gamma;
 c      = Psi.bpM.c;
 
@@ -33,21 +32,37 @@ Kii = length( availFeatIDs );
 uniqueFeatIDs = availFeatIDs( featureCounts( availFeatIDs ) == 1  );
 uCur = length(uniqueFeatIDs);
 
-% -------------------------------- Eta prop
-propEta_ii = TransM.sampleEtaProposal_UniqueBirth( ii );
+% -------------------------------- DETERMINISTIC Eta prop
+propTransM = Psi.TransM.getAllEta_PriorMean( ii, [F zeros(N,1)], K+1 );
+EtaHatAll = propTransM.seq(ii);
 
-% -------------------------------  Theta prop
+% -------------------------------  DETERMINISTIC Theta prop
+ThetaHat = Psi.ThetaM;
+for kk = availFeatIDs
+    PN = ThetaHat.getPosteriorParams( ThetaHat.Xstats(kk) );
+    ThetaHat.theta(kk) = Psi.ThetaM.getTheta_Mean( PN );
+end
+
 switch algParams.RJ.birthPropDistr
     case {'Prior','prior'}
-        choice = 1;
         wstart = 0; wend = 0;
-        [thetaStar] = ThetaM.sampleThetaProposal_BirthPrior( );
-        propThetaM = ThetaM.insertTheta( thetaStar );
+        [thetaStar] = ThetaHat.getTheta_Mean( );
+        ThetaHat = ThetaHat.insertTheta( thetaStar );
     case {'DataDriven', 'DD', 'datadriven'}
         [wstart, wend, L] = drawRandomSubwindow( data.Ts(ii), algParams.RJ.minW, algParams.RJ.maxW );
-        [thetaStar,PPmix, choice] = ThetaM.sampleThetaProposal_BirthDataDriven( ii, data, wstart:wend );
-        propThetaM = ThetaM.insertTheta( thetaStar );
+        if strcmp( class(data), 'ARSeqData' )
+            X = data.seq(ii);
+            Xprev = data.prev(ii);
+            PN = ThetaHat.getPosteriorParams( ThetaHat.getXSuffStats( X(:,wstart:wend), Xprev(:,wstart:wend) ) );
+        else
+            X = data.seq(ii);
+            PN = ThetaHat.getPosteriorParams( ThetaHat.getXSuffStats( X(:,wstart:wend) ) );
+        end
+        thetaStar = ThetaHat.getTheta_Mean(PN);
+        ThetaHat = ThetaHat.insertTheta( thetaStar );
 end
+
+seqSoftEv = ThetaHat.calcLogSoftEv(  ii, data, [availFeatIDs K+1] );
 
 % Define prob of proposing birth move
 %   as deterministic function of the # of unique features
@@ -66,24 +81,30 @@ if MoveType == 1
     kk = K+1;    
     propF_ii = F(ii,:) == 1;
     propF_ii(kk) = 1;
+    propF(ii,kk)=1;
     uNew = uCur + 1;
     
     % ----------------------------------------------- build eta
     % Birth move, keep around *all* of the entries in Pz
-    propEta = propEta_ii;
+    EtaHat = EtaHatAll;
     
-    switch algParams.RJ.birthPropDistr
-        case {'DataDriven', 'DD', 'datadriven'}   
-            if algParams.RJ.doHastingsFactor
-            logPrThetaStar_prior = propThetaM.calcLogPrTheta( thetaStar );
-            logPrThetaStar_prop  = propThetaM.calcLogPrTheta_MixWithPrior( thetaStar, PPmix );
-            logPrTheta_Diff = logPrThetaStar_prior - logPrThetaStar_prop;
-            else
-                logPrTheta_Diff = -20;
-            end
-        case {'Prior', 'prior'}
-            logPrTheta_Diff = 0;
+    
+    % ----------------------------------------------- sample proposed z_ii
+    propFeatIDs = [availFeatIDs K+1];
+    [propStateSeq(ii).z, logQ.z] = sampleSingleStateSeq_WithSoftEv( ii, EtaHat, seqSoftEv(propFeatIDs,:) );
+    
+    propThetaHat = ThetaHat.decXStats( ii, data, Psi.stateSeq, availFeatIDs );
+    propThetaHat = propThetaHat.incXStats( ii, data, propStateSeq, [availFeatIDs K+1] );
+    for jj = [availFeatIDs K+1]
+        PN = propThetaHat.getPosteriorParams( propThetaHat.Xstats(jj) );
+        propThetaHat.theta(jj) = propThetaHat.getTheta_Mean( PN );
     end
+    seqSoftEvRev = propThetaHat.calcLogSoftEv(  ii, data, [availFeatIDs] );
+    seqSoftEvRev = seqSoftEvRev(availFeatIDs,:);
+    % ----------------------------------------------- reverse to original z
+    EtaHatOrig.availFeatIDs = availFeatIDs;
+    EtaHatOrig.eta = EtaHatAll.eta( 1:Kii, 1:Kii);
+    [~, logQ_Rev.z] = sampleSingleStateSeq_WithSoftEv( ii, EtaHatOrig, seqSoftEvRev, Psi );
     
     % Probability of birth in current config
     logQ.moveChoice = log( qs(1) );
@@ -99,27 +120,31 @@ else
     kk =  uniqueFeatIDs( MoveType-1 );
     propF_ii = F(ii,:) == 1;
     propF_ii( kk ) = 0;   
+    propF(ii,kk)=0;
     uNew = uCur - 1;
     
     % ----------------------------------------------- build eta
     jj = find( availFeatIDs == kk );
     keepFeatIDs = [1:jj-1 jj+1:Kii];
-    propEta = propEta_ii( keepFeatIDs, keepFeatIDs );
+    EtaHat.availFeatIDs = availFeatIDs(keepFeatIDs);
+    EtaHat.eta = EtaHatAll.eta( keepFeatIDs, keepFeatIDs );
     
-    % ----------------------------------------------- build theta
-    switch algParams.RJ.birthPropDistr
-        case {'DataDriven', 'DD', 'datadriven'}
-            thetaStar = propThetaM.theta(kk);
-            if algParams.RJ.doHastingsFactor
-                logPrThetaKK_prior = propThetaM.calcLogPrTheta( propThetaM.theta(kk) );
-                logPrThetaKK_prop  = propThetaM.calcLogPrTheta_MixWithPrior( propThetaM.theta(kk), PPmix );
-                logPrTheta_Diff = logPrThetaKK_prop - logPrThetaKK_prior;
-            else
-                logPrTheta_Diff=-20;
-            end
-        case {'Prior', 'prior'}
-            logPrTheta_Diff = 0;
+    % ----------------------------------------------- sample proposed z_ii
+    [propStateSeq(ii).z, logQ.z] = sampleSingleStateSeq_WithSoftEv( ii, EtaHat, seqSoftEv( availFeatIDs(keepFeatIDs),:) );
+   
+    propThetaHat = ThetaHat.decXStats( ii, data, Psi.stateSeq, availFeatIDs );
+    propThetaHat = propThetaHat.incXStats( ii, data, propStateSeq, [availFeatIDs] );
+    for jj = [availFeatIDs(keepFeatIDs) ]
+        PN = propThetaHat.getPosteriorParams( propThetaHat.Xstats(jj) );
+        propThetaHat.theta(jj) = propThetaHat.getTheta_Mean( PN );
     end
+    seqSoftEvRev = propThetaHat.calcLogSoftEv(  ii, data, [availFeatIDs(keepFeatIDs) K+1] );
+    seqSoftEvRev = seqSoftEvRev( [availFeatIDs(keepFeatIDs) K+1],:);
+    
+    % ----------------------------------------------- reverse to original z
+    EtaHatOrig.availFeatIDs = availFeatIDs;
+    EtaHatOrig.eta = EtaHatAll.eta( 1:Kii, 1:Kii);
+    [~, logQ_Rev.z] = sampleSingleStateSeq_WithSoftEv( ii, EtaHatOrig, seqSoftEvRev, Psi );
     
     % Probability of death  in current config
     logQ.moveChoice = log( qs(MoveType) );
@@ -137,38 +162,26 @@ end
 eta = gamma *c/(c + N -1 );
 logPrNumFeat_Diff = ( uNew - uCur )*log( eta ) +  gammaln( uCur + 1 ) - gammaln( uNew + 1 );
 
-% -------------------------------- p( x | eta, theta, F)  terms
-if isfield( Psi, 'cache' ) && isfield( Psi.cache, 'logSoftEv' )
-    logSoftEv = Psi.cache.logSoftEv{ii};
-    if strcmp( descrStr, 'birth' )
-        logSoftEvStar = propThetaM.calcLogSoftEv( ii, data,  [K+1] );
-        logSoftEv( K+1,:) = logSoftEvStar(K+1,:);
-    end
+% -------------------------------- p( z_ii | F ) term
+logPrZ_Prop = Psi.TransM.calcMargPrStateSeq( propF, propStateSeq, ii );
+logPrZ_Cur = Psi.TransM.calcMargPrStateSeq( F, Psi.stateSeq, ii );
+
+% -------------------------------- p( x | z, F)  terms
+if MoveType==1
+logPrObs_Prop = propThetaHat.calcMargPrData( data, propStateSeq, [availFeatIDs K+1] );
 else
-    logSoftEv = propThetaM.calcLogSoftEv( ii, data, [availFeatIDs K+1] ); 
+logPrObs_Prop = propThetaHat.calcMargPrData( data, propStateSeq, availFeatIDs(keepFeatIDs) );
 end
-if isfield(Psi,'cache') && isfield( Psi.cache, 'logMargPrObs' )
-    logMargPrObs_Cur = Psi.cache.logMargPrObs(ii);
-else
-    curF_ii = false( size(propF_ii) );
-    curF_ii( availFeatIDs ) = true;
-    logMargPrObs_Cur = calcLogMargPrObsSeqFAST( logSoftEv( curF_ii, :), propEta_ii( 1:Kii, 1:Kii ) );
-end
-logMargPrObs_Prop = calcLogMargPrObsSeqFAST( logSoftEv( propF_ii, :), propEta );
+logPrObs_Cur  = Psi.ThetaM.calcMargPrData( data, Psi.stateSeq, availFeatIDs );
 
 % Compute accept-reject ratio:  ( see eq. 15 in BP HMM paper )
-log_rho_star = logMargPrObs_Prop - logMargPrObs_Cur  ...
+log_rho_star = logPrObs_Prop - logPrObs_Cur ...
     + logPrNumFeat_Diff ...
-    + logPrTheta_Diff ...
+    + logPrZ_Prop - logPrZ_Cur ...
+    + logQ_Rev.z - logQ.z ...
     + logQ_Rev.moveChoice - logQ.moveChoice;
 
-RhoTerms.logMargPrObs_Prop = logMargPrObs_Prop;
-RhoTerms.logMargPrObs_Cur  = logMargPrObs_Cur;
-RhoTerms.logPrThetaDiff = logPrTheta_Diff;
-RhoTerms.logQMove.fwd = logQ.moveChoice;
-RhoTerms.logQMove.rev = logQ_Rev.moveChoice;
 RhoTerms.thetaStar = thetaStar;
-RhoTerms.choice = choice;
 RhoTerms.window = [wstart wend];
 
 rho = exp(log_rho_star);
@@ -188,18 +201,16 @@ if doAccept
             f_ii_kk = 0;
     end
     Psi.F( ii, kk ) = f_ii_kk;
-    Psi.ThetaM = propThetaM;
-    Psi.TransM = Psi.TransM.setEta( ii, propF_ii, propEta );
+    Psi.stateSeq = propStateSeq;
+    Psi.ThetaM = propThetaHat;
+    Psi.TransM = Psi.TransM.setEta( ii, propF_ii, EtaHat.eta );
     
-    if isfield(Psi,'cache') && isfield( Psi.cache, 'logSoftEv' )
-        Psi.cache.logMargPrObs(ii) = logMargPrObs_Prop;
-        
+    if isfield(Psi,'cache') && isfield( Psi.cache, 'logSoftEv' )        
         if strcmp( descrStr, 'birth' )
-            Psi.cache.logSoftEv{ii} = logSoftEv;
+            Psi.cache.logSoftEv{ii} = seqSoftEv;
         end
     else
-        Psi.cache.logMargPrObs(ii) = logMargPrObs_Prop;
-        Psi.cache.logSoftEv{ii} = logSoftEv;
+        Psi.cache.logSoftEv{ii} = seqSoftEv;
     end
     
     if strcmp( descrStr,'death')

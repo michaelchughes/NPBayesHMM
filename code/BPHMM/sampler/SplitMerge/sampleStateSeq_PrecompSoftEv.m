@@ -2,7 +2,7 @@ function [z, logPrQ_z] = sampleStateSeq_PrecompSoftEv( ii, Etaii, LL, TargetPsi)
 % Sample hidden states "z" for one specific sequence
 %INPUT
 %  ii : integer ID of which sequence to sample
-%  Etaii : Kii x Kii matrix of eta transition weights (not normalized)
+%  Etaii : struct for ii's eta transition weights (not normalized)
 %  LL    : Kii x T   matrix of soft evidence
 %  TargetPsi : (optional) desired target values for this state seq
 %               are recorded in TargetPsi.stateSeq(ii).z

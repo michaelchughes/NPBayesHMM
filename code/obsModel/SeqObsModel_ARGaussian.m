@@ -84,7 +84,7 @@ classdef SeqObsModel_ARGaussian < SeqObsModel
                 XX = Xkk*Xkk';
                 XY = Xkk*Xprev';
                 YY = Xprev*Xprev';
-                if obj.Xstats(kk).nObs == 0
+                if length(obj.Xstats)<kk ||obj.Xstats(kk).nObs == 0
                     obj.Xstats(kk).nObs = nNew;
                     obj.Xstats(kk).XX = XX;
                     obj.Xstats(kk).XY = XY;
