@@ -33,6 +33,11 @@ echo " "
 exit
 
 runMocap6.sh SM+zDD one 36000
+Your job-array 1878190.1-10:1 ("runMocap6.sh") has been submitted
+runMocap6.sh SM+zDD+Anneal one 36000
+Your job-array 1878191.1-10:1 ("runMocap6.sh") has been submitted
+
+runMocap6.sh SM+zDD one 36000
 Your job-array 1876678.1-10:1 ("runMocap6.sh") has been submitted
 runMocap6.sh SM+DD+Anneal one 36000
 Your job-array 1876679.1-10:1 ("runMocap6.sh") has been submitted

@@ -6,14 +6,18 @@
 clear all;
 close all;
 
+doAR = 1;
 doDataDriven = 1;
-obsDim = 35;
+obsDim = 25;
 
 % Generate Gaussian toy data for the BP-HMM
 Ktrue = 8;
 T = 500;
+if doAR
+dataP = {'SynthAR', 'nStates', Ktrue, 'obsDim', obsDim, 'T', T};
+else
 dataP = {'SynthGaussian', 'nStates', Ktrue, 'obsDim', obsDim, 'T', T};
-
+end
 mP = {};
 initP = {'F.nTotal', 1};
 aalgP = {'Niter', 30, ...
