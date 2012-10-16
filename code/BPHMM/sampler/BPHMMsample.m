@@ -67,7 +67,7 @@ if algP.doSampleUniqueZ
     %   the thetas and etas held in "Psi" are no good!
     % MUST resample immediately.
     N = size(Psi.F,1);
-    objIDs=randsample( 1:N, ceil(N/5) );
+    objIDs=randsample( 1:N, ceil(N/2) );
     [Psi, Stats.RJZ] = sampleUniqueFeats( Psi, data, algP, 1, objIDs );
 end
 

@@ -164,7 +164,7 @@ logPrNumFeat_Diff = ( uNew - uCur )*log( eta ) +  gammaln( uCur + 1 ) - gammaln(
 
 % -------------------------------- p( z_ii | F ) term
 logPrZ_Prop = Psi.TransM.calcMargPrStateSeq( propF, propStateSeq, ii );
-logPrZ_Cur = Psi.TransM.calcMargPrStateSeq( F, Psi.stateSeq, ii );
+logPrZ_Cur  = Psi.TransM.calcMargPrStateSeq( F, Psi.stateSeq, ii );
 
 % -------------------------------- p( x | z, F)  terms
 if MoveType==1
@@ -179,7 +179,12 @@ logQHastings = logQ_Rev.z - logQ.z ...
     + logQ_Rev.moveChoice - logQ.moveChoice;
 
 if algParams.doAnneal
-    logQHastings = Psi.invTemp * logQHastings;
+    if Psi.invTemp == 0 && isinf(logQHastings)
+        logQHastings = -Inf; % always want to ignore in this case!
+        % Otherwise, we are not reversible!
+    else
+        logQHastings = Psi.invTemp * logQHastings;
+    end
 end
 
 % Compute accept-reject ratio:  ( see eq. 15 in BP HMM paper )
