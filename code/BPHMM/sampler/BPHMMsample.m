@@ -66,7 +66,9 @@ if algP.doSampleUniqueZ
     % Warning: after a successful accept,
     %   the thetas and etas held in "Psi" are no good!
     % MUST resample immediately.
-    [Psi, Stats.RJZ] = sampleUniqueFeats( Psi, data, algP, 1);
+    N = size(Psi.F,1);
+    objIDs=randsample( 1:N, ceil(N/10) );
+    [Psi, Stats.RJZ] = sampleUniqueFeats( Psi, data, algP, 1, objIDs );
 end
 
 if algP.doSampleEta

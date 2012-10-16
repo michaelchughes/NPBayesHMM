@@ -101,6 +101,10 @@ else
     LabelRange = [min(uEstR) max(uEstR)];
 end
 
+if LabelRange(1)==LabelRange(2)
+   LabelRange(1)=LabelRange(1)-.01; 
+end
+
 
 % ============================================================ PLOT
 halfV = 5; % defines how "tall" each seq's plot is... large allows real estate for interaction
