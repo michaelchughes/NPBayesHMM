@@ -14,6 +14,7 @@ function [Psi, RhoTerms] = ...
 %  Psi : new model config (with potentially new unique features for ii )
 %  RhoTerms : some stats about the MH proposal and what kind of move occurs
 
+doDebug=1;
 
 % ========================================================  UNPACK
 F = Psi.F;
@@ -88,14 +89,13 @@ if MoveType == 1
     % Birth move, keep around *all* of the entries in Pz
     EtaHat = EtaHatAll;
     
-    
     % ----------------------------------------------- sample proposed z_ii
     propFeatIDs = [availFeatIDs K+1];
     [propStateSeq(ii).z, logQ.z] = sampleSingleStateSeq_WithSoftEv( ii, EtaHat, seqSoftEv(propFeatIDs,:) );
     
     propThetaHat = ThetaHat.decXStats( ii, data, Psi.stateSeq, availFeatIDs );
-    propThetaHat = propThetaHat.incXStats( ii, data, propStateSeq, [availFeatIDs K+1] );
-    for jj = [availFeatIDs K+1]
+    propThetaHat = propThetaHat.incXStats( ii, data, propStateSeq, propFeatIDs );
+    for jj = propFeatIDs
         PN = propThetaHat.getPosteriorParams( propThetaHat.Xstats(jj) );
         propThetaHat.theta(jj) = propThetaHat.getTheta_Mean( PN );
     end
@@ -133,8 +133,8 @@ else
     [propStateSeq(ii).z, logQ.z] = sampleSingleStateSeq_WithSoftEv( ii, EtaHat, seqSoftEv( availFeatIDs(keepFeatIDs),:) );
    
     propThetaHat = ThetaHat.decXStats( ii, data, Psi.stateSeq, availFeatIDs );
-    propThetaHat = propThetaHat.incXStats( ii, data, propStateSeq, [availFeatIDs] );
-    for jj = [availFeatIDs(keepFeatIDs) ]
+    propThetaHat = propThetaHat.incXStats( ii, data, propStateSeq, availFeatIDs );
+    for jj = availFeatIDs(keepFeatIDs)
         PN = propThetaHat.getPosteriorParams( propThetaHat.Xstats(jj) );
         propThetaHat.theta(jj) = propThetaHat.getTheta_Mean( PN );
     end
@@ -168,11 +168,12 @@ logPrZ_Cur = Psi.TransM.calcMargPrStateSeq( F, Psi.stateSeq, ii );
 
 % -------------------------------- p( x | z, F)  terms
 if MoveType==1
-    logPrObs_Prop = propThetaHat.calcMargPrData( data, propStateSeq, [availFeatIDs K+1] );
+    logPrObs_Prop = propThetaHat.calcMargPrData( data, propStateSeq, propFeatIDs );
 else
     logPrObs_Prop = propThetaHat.calcMargPrData( data, propStateSeq, availFeatIDs(keepFeatIDs) );
 end
-logPrObs_Cur  = Psi.ThetaM.calcMargPrData();
+% Only concerned with the active features!
+logPrObs_Cur  = Psi.ThetaM.calcMargPrData([], [], availFeatIDs);
 
 logQHastings = logQ_Rev.z - logQ.z ...
     + logQ_Rev.moveChoice - logQ.moveChoice;
@@ -198,6 +199,20 @@ doAccept = rand < rho;  % Binary indicator for if cur proposal accepted
 
 RhoTerms.doAccept = doAccept;
 RhoTerms.doBirth  = strcmp( descrStr, 'birth' );
+
+% if doDebug
+%     propPsi.F    = propF;
+%     propPsi.stateSeq = propStateSeq;
+%     propPsi.TransM   = Psi.TransM;
+%     propPsi.TransM.seq(ii) = EtaHat;
+%     propPsi.ThetaM   = propThetaHat;
+%     propPsi.bpM  = Psi.bpM;
+%     
+%     lPP = calcJointLogPr_BPHMMState( propPsi, data);
+%     lPC = calcJointLogPr_BPHMMState( Psi,     data);
+%     assert( allEq( lPP.obs-lPC.obs, logPrObs_Prop-logPrObs_Cur), 'bad' );
+%     assert( allEq( lPP.z -lPC.z , logPrZ_Prop-logPrZ_Cur), 'bad' );
+% end
 
 if doAccept
     switch descrStr

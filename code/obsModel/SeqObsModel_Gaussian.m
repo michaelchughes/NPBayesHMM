@@ -188,7 +188,7 @@ classdef SeqObsModel_Gaussian < SeqObsModel
             end
             Xseq = data.seq(ii);
             T = size( Xseq,2);
-            logSoftEv = zeros( obj.K, T );
+            logSoftEv = -inf( obj.K, T );
             for kk = kIDs
                 cholInvSigma = chol( obj.theta(kk).invSigma );
                 logDetInvSigma = 2*sum( log( diag( cholInvSigma) ) );
@@ -225,7 +225,7 @@ classdef SeqObsModel_Gaussian < SeqObsModel
                     logPr(kk) = ...
                         logMvGamma(0.5*PN.degFree,D) - logMvGamma(0.5*P0.degFree,D) ...
                         + 0.5*P0.degFree*log( det( P0.ScaleMat ) )   ...
-                        - 0.5*PN.degFree  *log( det( PN.ScaleMat ) ) ...
+                        - 0.5*PN.degFree*log( det( PN.ScaleMat ) ) ...
                         + 0.5*D*log( P0.precMu / PN.precMu );
                 end
             end

@@ -203,7 +203,7 @@ classdef SeqObsModel_ARGaussian < SeqObsModel
             Xprev = data.prev(ii);
             
             T = size( Xseq,2);
-            logSoftEv = zeros( obj.K, T );
+            logSoftEv = -inf( obj.K, T );
             for kk = kIDs
                 cholInvSigma  = chol( obj.theta(kk).invSigma );
                 logDetInvSigma = 2*sum( log( diag( cholInvSigma ) ) );

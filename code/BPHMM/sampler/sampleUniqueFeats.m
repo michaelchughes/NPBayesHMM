@@ -41,13 +41,3 @@ for ii = objIDs
         end
     end
 end
-
-% ===================================================== Record Descr Stats
-% If MoveType=0 (death), then if accepted fNew should be 0
-%  likewise, MoveType=1(birth) should if accepted make fNew=1
-% MoveStats.nAccept = sum( fNew == MoveType01 );
-% MoveStats.nTrial  = nObj;
-% MoveStats.BIRTH.nAccept = sum( fNew( MoveType01 == 1 ) == 1 );
-% MoveStats.BIRTH.nTrial  = sum( MoveType01 == 1 );
-% MoveStats.DEATH.nAccept = sum( fNew( MoveType01 == 0 ) == 0 );
-% MoveStats.DEATH.nTrial  = sum( MoveType01 == 0 );

@@ -17,7 +17,9 @@ switch infName
     case 'Prior'
         algP = {'doSampleFUnique', 1, 'doSplitMerge', 0, 'RJ.birthPropDistr', 'Prior'};         
     case {'DD', 'DataDriven'}
-        algP = {'doSampleFUnique', 1, 'doSplitMerge', 0, 'RJ.birthPropDistr', 'DataDriven'};            
+        algP = {'doSampleFUnique', 1, 'doSplitMerge', 0, 'RJ.birthPropDistr', 'DataDriven'};  
+    case {'zDD'}
+        algP = {'doSampleFUnique', 0, 'doSampleUniqueZ', 1, 'doSplitMerge', 0, 'RJ.birthPropDistr', 'DataDriven'};       
     case 'SM'                
         algP = {'doSampleFUnique', 0, 'doSplitMerge', 1};         
     case 'SM+DD'               
