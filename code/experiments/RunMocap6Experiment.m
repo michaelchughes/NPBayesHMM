@@ -11,16 +11,24 @@ dataP = {'Mocap6'};
 modelP = {};
 
 TimeLimit = force2double( TimeLimit );
-
+T0 = 500;
+Tf = 10000;
 switch infName
     case 'Prior'
-        algP = {'doSampleFUnique', 1, 'doSplitMerge', 0, 'theta.birthPropDistr', 'Prior'};         
+        algP = {'doSampleFUnique', 1, 'doSplitMerge', 0, 'RJ.birthPropDistr', 'Prior'};         
     case {'DD', 'DataDriven'}
-        algP = {'doSampleFUnique', 1, 'doSplitMerge', 0, 'theta.birthPropDistr', 'DataDriven'};            
+        algP = {'doSampleFUnique', 1, 'doSplitMerge', 0, 'RJ.birthPropDistr', 'DataDriven'};            
     case 'SM'                
         algP = {'doSampleFUnique', 0, 'doSplitMerge', 1};         
     case 'SM+DD'               
-        algP = {'doSampleFUnique', 1, 'doSplitMerge', 1, 'theta.birthPropDistr', 'DataDriven'};                      
+        algP = {'doSampleFUnique', 1, 'doSampleUniqueZ', 0, 'doSplitMerge', 1, 'RJ.birthPropDistr', 'DataDriven'};                      
+    case 'SM+zDD'               
+        algP = {'doSampleFUnique', 0, 'doSampleUniqueZ', 1, 'doSplitMerge', 1, 'RJ.birthPropDistr', 'DataDriven'};       
+    case 'SM+DD+Anneal'        
+        algP = {'doSampleFUnique', 1, 'doSampleUniqueZ', 0, 'doSplitMerge', 1, 'RJ.birthPropDistr', 'DataDriven', 'doAnneal', 1, 'T0', T0, 'Tf', Tf};      
+    case 'SM+zDD+Anneal'        
+        algP = {'doSampleFUnique', 0, 'doSampleUniqueZ', 1, 'doSplitMerge', 1, 'RJ.birthPropDistr', 'DataDriven', 'doAnneal', 1, 'T0', T0, 'Tf', Tf};               
+    % NON VALID OPTIONS (for experiments only)
     case 'SMnoqrev'               
         algP = {'doSampleFUnique', 0, 'doSMNoQRev', 1}; 
     case 'SMnoqrev+DD'               
@@ -29,6 +37,7 @@ switch infName
         error( 'unrecognized inference type' );
 end
 algP(end+1:end+2) = {'TimeLimit', TimeLimit};
+
 
 switch initName
     case 'cheat'

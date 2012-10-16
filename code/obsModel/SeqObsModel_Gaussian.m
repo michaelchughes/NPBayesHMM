@@ -210,7 +210,7 @@ classdef SeqObsModel_Gaussian < SeqObsModel
             if ~exist( 'ks', 'var' )
                 ks = 1:obj.K;
             end
-            if exist( 'data', 'var' )
+            if exist( 'data', 'var' ) && ~isempty( data )
                 obj = obj.updateAllXSuffStats(  horzcat(stateSeq(:).z), data );
             end
             LOG_PI =  1.144729885849400;

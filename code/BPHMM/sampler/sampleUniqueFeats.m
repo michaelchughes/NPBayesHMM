@@ -28,8 +28,6 @@ for ii = objIDs
         [Psi, RhoTerms] = sampleSingleFeatEntry_UniqueRJ( ii, Psi, data, algParams );
     end
     
-    
-    
     if RhoTerms.doBirth
         Stats.ADD.nTotal = Stats.ADD.nTotal+1;
         if RhoTerms.doAccept;

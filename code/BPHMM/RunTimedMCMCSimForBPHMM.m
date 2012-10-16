@@ -32,7 +32,8 @@ fprintf( 'Running MCMC Sampler %d : %d ... \n', outParams.jobID, outParams.taskI
 n = 0;
 while toc < algParams.TimeLimit
     n = n + 1;
-    
+    Psi.iter = n;
+
     % Perform 1 iteration of MCMC, moving to next Markov state!
     [Psi, Stats] = BPHMMsample( Psi, data, algParams );
     

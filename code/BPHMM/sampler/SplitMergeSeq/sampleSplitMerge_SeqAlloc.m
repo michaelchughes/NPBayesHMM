@@ -59,7 +59,12 @@ logQ.all     = log(qFWD) + logQ.F + logQ.z;
 logPr_Cur  = calcJointLogPr_BPHMMState( Psi );
 logPr_Prop = calcJointLogPr_BPHMMState( propPsi );
 
-logPrAccept = logPr_Prop.all - logPr_Cur.all + logQ_Rev.all - logQ.all;
+logQ_Hastings = logQ_Rev.all - logQ.all;
+if algParams.doAnneal
+    logQ_Hastings = Psi.invTemp * logQ_Hastings;
+end
+
+logPrAccept = logPr_Prop.all - logPr_Cur.all + logQ_Hastings;
 rho = exp( logPrAccept );
 rho = min(1, rho);
 doAccept = rand < rho;
@@ -68,6 +73,9 @@ if (  doAccept )
     newPsi = propPsi;
     % Remove empty columns of F, and rename state sequence appropriately
     newPsi = reallocateFeatIDs( newPsi );
+    if isfield( Psi, 'invTemp')
+        newPsi.invTemp = Psi.invTemp;
+    end
 else
     newPsi = Psi;
 end

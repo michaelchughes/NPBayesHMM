@@ -10,6 +10,18 @@ function [Psi, Stats] = BPHMMsample( Psi, data, algP)
 %    HMM emission    theta (Gibbs updates given z
 %    HMM hypers      alph/kappa  (MH proposals via Gamma random walk)
 %    BP  hypers      gamma/c     (MH proposals / Gibbs updates)
+Stats=struct();
+if algP.doAnneal
+   T0 = algP.Anneal.T0;
+   Tf = algP.Anneal.Tf;
+   
+   if Psi.iter >= T0
+       tau = Tf/5; % 5*tau = "fully charged" (invTemp > 0.99 )
+       Psi.invTemp = 1-exp(-(Psi.iter-T0)./tau);
+   else
+       Psi.invTemp = 0;
+   end
+end
 
 if algP.doSampleFShared
     [Psi, Stats.FMH] = sampleSharedFeats( Psi, data );
@@ -49,7 +61,6 @@ elseif algP.doSMNoQRev
     end
     Stats.SM = SM;
 end
-
 
 if algP.doSampleUniqueZ
     % Warning: after a successful accept,

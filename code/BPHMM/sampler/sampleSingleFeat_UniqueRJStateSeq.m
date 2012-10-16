@@ -168,18 +168,24 @@ logPrZ_Cur = Psi.TransM.calcMargPrStateSeq( F, Psi.stateSeq, ii );
 
 % -------------------------------- p( x | z, F)  terms
 if MoveType==1
-logPrObs_Prop = propThetaHat.calcMargPrData( data, propStateSeq, [availFeatIDs K+1] );
+    logPrObs_Prop = propThetaHat.calcMargPrData( data, propStateSeq, [availFeatIDs K+1] );
 else
-logPrObs_Prop = propThetaHat.calcMargPrData( data, propStateSeq, availFeatIDs(keepFeatIDs) );
+    logPrObs_Prop = propThetaHat.calcMargPrData( data, propStateSeq, availFeatIDs(keepFeatIDs) );
 end
-logPrObs_Cur  = Psi.ThetaM.calcMargPrData( data, Psi.stateSeq, availFeatIDs );
+logPrObs_Cur  = Psi.ThetaM.calcMargPrData();
+
+logQHastings = logQ_Rev.z - logQ.z ...
+    + logQ_Rev.moveChoice - logQ.moveChoice;
+
+if algParams.doAnneal
+    logQHastings = Psi.invTemp * logQHastings;
+end
 
 % Compute accept-reject ratio:  ( see eq. 15 in BP HMM paper )
 log_rho_star = logPrObs_Prop - logPrObs_Cur ...
     + logPrNumFeat_Diff ...
     + logPrZ_Prop - logPrZ_Cur ...
-    + logQ_Rev.z - logQ.z ...
-    + logQ_Rev.moveChoice - logQ.moveChoice;
+    + logQHastings;
 
 RhoTerms.thetaStar = thetaStar;
 RhoTerms.window = [wstart wend];
@@ -205,13 +211,16 @@ if doAccept
     Psi.ThetaM = propThetaHat;
     Psi.TransM = Psi.TransM.setEta( ii, propF_ii, EtaHat.eta );
     
-    if isfield(Psi,'cache') && isfield( Psi.cache, 'logSoftEv' )        
-        if strcmp( descrStr, 'birth' )
-            Psi.cache.logSoftEv{ii} = seqSoftEv;
-        end
-    else
-        Psi.cache.logSoftEv{ii} = seqSoftEv;
+    if isfield( Psi, 'cache')
+        Psi = rmfield( Psi, 'cache');
     end
+    %if isfield(Psi,'cache') && isfield( Psi.cache, 'logSoftEv' )        
+    %    if strcmp( descrStr, 'birth' )
+    %        Psi.cache.logSoftEv{ii} = seqSoftEv;
+    %    end
+    %else
+    %    Psi.cache.logSoftEv{ii} = seqSoftEv;
+    %end
     
     if strcmp( descrStr,'death')
       Psi = reallocateFeatIDs( Psi );

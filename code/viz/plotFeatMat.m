@@ -65,12 +65,14 @@ F = F(objIDs,:);
 F_used = F_used(objIDs,:);
 
 imagesc(F+F_used, [0 2]);
-ticks = get( gca, 'YTick');
 
-set( gca, 'YTickLabel', objIDs(ticks) );
 xlabel( 'behaviors', 'FontSize', 20);
 ylabel( 'data sequences', 'FontSize', 20 );
 set( gca, 'FontSize', 16 );
 colormap bone;
 colorbar(  'YTick', [0 1 2],       'YTickLabel', {'Disabled', 'Available', 'Active'});
+
+ticks = get( gca, 'YTick');
+set( gca, 'YTickLabel', objIDs(ticks) );
+
 end

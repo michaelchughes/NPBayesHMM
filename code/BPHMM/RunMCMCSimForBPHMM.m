@@ -30,6 +30,7 @@ printMCMCSummary_BPHMM( 0, Psi, logPr, algParams);
 
 fprintf( 'Running MCMC Sampler %d : %d ... \n', outParams.jobID, outParams.taskID );
 for n=1:algParams.Niter
+    Psi.iter = n;
     
     % Perform 1 iteration of MCMC, moving to next Markov state!
     [Psi, Stats] = BPHMMsample( Psi, data, algParams );

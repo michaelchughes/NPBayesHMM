@@ -1,0 +1,29 @@
+GitGuide, by Michael Hughes.
+Some simple tips for my basic git workflow.
+
+====================== BRANCHING
+1) Create branch (and move into it all at once)
+git checkout -b <bname>
+
+2) See what branches exist
+git branch
+
+3) Switch into some existing branch
+git checkout <bname>
+
+======================= BRANCH w/ remote tracking
+Remote tracking allows multiple devs/multiple computers to have access to the same branch.
+
+1) Create the branch (locally)
+git checkout -b <bname>
+
+2) Commit to the remote server FOR THE FIRST TIME
+git commit -a -m "My Message"
+git push -u origin <bname>
+
+3) Check out branch on remote machine
+git checkout --track -b <bname> origin/<bname>
+
+4) Commit+Push edits to the branch (on any machine) AT ANY TIME
+git commit -a -m "My msg"
+git push

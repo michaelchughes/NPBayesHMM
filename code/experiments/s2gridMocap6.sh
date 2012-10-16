@@ -2,10 +2,10 @@
 
 TimeLimit=36000
 
-for initName in 'one' 'unique5'
+for initName in 'one' #'unique5'
 do
 
-    for infName in 'Prior' 'SM+DD' 'SMnoqrev+DD'
+    for infName in 'SM+zDD' 'SM+DD+Anneal' 'SM+zDD+Anneal' #'Prior' 'SM+DD' 'SMnoqrev+DD'
     do
 
     COMMAND="runMocap6.sh $infName $initName $TimeLimit"
@@ -31,6 +31,14 @@ done
 
 echo " "
 exit
+
+runMocap6.sh SM+zDD one 36000
+Your job-array 1876678.1-10:1 ("runMocap6.sh") has been submitted
+runMocap6.sh SM+DD+Anneal one 36000
+Your job-array 1876679.1-10:1 ("runMocap6.sh") has been submitted
+runMocap6.sh SM+zDD+Anneal one 36000
+Your job-array 1876680.1-10:1 ("runMocap6.sh") has been submitted
+
 
 Skipped Prior one since it is worthless.
 runMocap6.sh SM+DD one 36000
