@@ -5,7 +5,7 @@ TimeLimit=36000
 for initName in 'one' #'unique5'
 do
 
-    for infName in 'SM+zDD' 'SM+DD+Anneal' 'SM+zDD+Anneal' #'Prior' 'SM+DD' 'SMnoqrev+DD'
+    for infName in 'SM+zDD' 'SM+zDD+Anneal' #'Prior' 'SM+DD' 'SMnoqrev+DD'
     do
 
     COMMAND="runMocap6.sh $infName $initName $TimeLimit"

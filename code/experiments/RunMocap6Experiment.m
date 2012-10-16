@@ -11,7 +11,7 @@ dataP = {'Mocap6'};
 modelP = {};
 
 TimeLimit = force2double( TimeLimit );
-T0 = 500;
+T0 = 22500;
 Tf = 10000;
 switch infName
     case 'Prior'
