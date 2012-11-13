@@ -11,7 +11,7 @@ dataP = {'Mocap6'};
 modelP = {};
 
 TimeLimit = force2double( TimeLimit );
-T0 = 10;
+T0 = 50;
 Tf = 10000;
 switch infName
     case 'Prior'
@@ -28,8 +28,10 @@ switch infName
         algP = {'doSampleFUnique', 0, 'doSampleUniqueZ', 1, 'doSplitMerge', 1, 'RJ.birthPropDistr', 'DataDriven'};       
     case 'SM+DD+Anneal'        
         algP = {'doSampleFUnique', 1, 'doSampleUniqueZ', 0, 'doSplitMerge', 1, 'RJ.birthPropDistr', 'DataDriven', 'doAnneal', 1, 'Anneal.T0', T0, 'Anneal.Tf', Tf};      
-    case 'SM+zDD+Anneal'        
-        algP = {'doSampleFUnique', 0, 'doSampleUniqueZ', 1, 'doSplitMerge', 1, 'RJ.birthPropDistr', 'DataDriven', 'doAnneal', 1, 'Anneal.T0', T0, 'Anneal.Tf', Tf};               
+    case 'SM+zDD+AnnealExp'        
+        algP = {'doSampleFUnique', 0, 'doSampleUniqueZ', 1, 'doSplitMerge', 1, 'RJ.birthPropDistr', 'DataDriven', 'doAnneal', 'Exp', 'Anneal.T0', T0, 'Anneal.Tf', Tf};               
+    case 'SM+zDD+AnnealLin'        
+        algP = {'doSampleFUnique', 0, 'doSampleUniqueZ', 1, 'doSplitMerge', 1, 'RJ.birthPropDistr', 'DataDriven', 'doAnneal', 'Lin', 'Anneal.T0', T0, 'Anneal.Tf', Tf};               
     % NON VALID OPTIONS (for experiments only)
     case 'SMnoqrev'               
         algP = {'doSampleFUnique', 0, 'doSMNoQRev', 1}; 

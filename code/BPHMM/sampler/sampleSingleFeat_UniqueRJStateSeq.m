@@ -14,7 +14,7 @@ function [Psi, RhoTerms] = ...
 %  Psi : new model config (with potentially new unique features for ii )
 %  RhoTerms : some stats about the MH proposal and what kind of move occurs
 
-doDebug=1;
+doDebug=0;
 
 % ========================================================  UNPACK
 F = Psi.F;
