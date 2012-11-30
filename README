@@ -19,7 +19,11 @@ The repository is organized as follows:
 Look for additional documentation and occasional updates on github:
    https://github.com/michaelchughes/NPBayesHMM/
      
-If you find this toolbox useful, please cite our Advances of Neural Information Processing Systems (NIPS) 2012 paper: "Effective Split-Merge Monte Carlo Methods for Nonparametric Models of Sequential Data".  PDF available online: http://web.michaelchughes.com/research/bp-hmm-split-merge-inference/HughesFoxSudderth_NIPS2012.pdf
+If you find this toolbox useful, please cite our NIPS 2012 paper:
+M. Hughes, E. Fox, and E. Sudderth. 
+"Effective Split-Merge Monte Carlo Methods for Nonparametric Models of Sequential Data". 
+Advances of Neural Information Processing Systems (NIPS) 2012.
+http://web.michaelchughes.com/research/bp-hmm-split-merge-inference/HughesFoxSudderth_NIPS2012.pdf
 
 This software is released under the Simple Public License 2.0, a permissive, 
 copyleft license.  Please see the LICENSE file for details.
