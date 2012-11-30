@@ -34,4 +34,8 @@ BP-AR-HMM toolbox, released by Emily Fox. Most functions have been completely
 re-written for speed, readability, and extensibility, but Emily deserves most
 credit for coming up with the original solid inference algorithms.
 
-I also thank Tom Minka for his excellent Lightspeed toolbox, and the development team at Eigen for a blazingly-fast matrix library, which made the HMM dynamic programming routines much much faster. Thanks also to William Allen for providing baseline code for these efficient routines.
+I also thank 
+* Tom Minka for his excellent Lightspeed toolbox
+* The development team at Eigen for a blazingly-fast matrix library
+Eigen made the HMM dynamic programming routines much much faster. 
+* William Allen for providing baseline code for these efficient routines.
