@@ -24,7 +24,7 @@ if isstruct( varargin{1} )
          objIDs = varargin{ll};
        end
     end
-elseif isnumeric( varargin{1} ) && size( varargin{1}, 1) > 1
+elseif (isnumeric( varargin{1} ) || islogical(varargin{1}) )&& size( varargin{1}, 1) > 1
     F = varargin{1};
 else
     jobID = varargin{1};
@@ -34,6 +34,7 @@ else
     if length( varargin ) >= 3
         queryIter = varargin{3};
         [~, idx] = min( abs( queryIter - DATA.iters.Psi ) );
+        fprintf( '@ iter %d\n', DATA.iters.Psi(idx) );
     else
         idx = length( DATA.Psi );
     end

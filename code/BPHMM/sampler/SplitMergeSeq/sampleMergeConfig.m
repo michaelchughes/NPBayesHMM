@@ -74,7 +74,7 @@ end
 proposalsON = false(1, size(propF,2) );
 proposalsON(propFeatIDs) = 1;
 for aa = [ otherObjIDs( randperm( length(otherObjIDs) ) ) anchorObjIDs]
-    
+
     % Calc Soft Evidence for the current sequence, including both new feats
     allActiveFeatIDs = find( propF(aa,:) | proposalsON );
     seqSoftEv = propThetaM.calcLogSoftEv( aa, data, allActiveFeatIDs );

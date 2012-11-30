@@ -13,7 +13,7 @@ switch data.getObsType()
         if strcmp( data.name(1), '13_29' ) % mocap data
             model.obsM.Scoef = 0.5;
         else
-            model.obsM.Scoef    = 1;
+            model.obsM.Scoef    = 0.5;
         end
 end
 
