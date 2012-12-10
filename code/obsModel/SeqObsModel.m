@@ -69,6 +69,9 @@ classdef SeqObsModel
                 obj.Xstats = repmat( obj.getXSuffStats([]), obj.K, 1 ); 
             else
                 obj.K = max( [max(Zall), obj.K, max(featIDs)] );
+                if isempty( obj.Xstats )
+                    obj.Xstats = repmat( obj.getXSuffStats([]), obj.K, 1 ); 
+                end
             end
             if exist( 'zeroIDs', 'var' ) && ~isempty(featIDs)
                for zz = zeroIDs

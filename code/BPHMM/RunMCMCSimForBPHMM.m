@@ -18,18 +18,28 @@
 %  Markov Chain state variables saved at preset frequency to hard drive
 %     at filepath location specified in outParams.saveDir
 
-function [ChainHist] = RunMCMCSimForBPHMM( data, Psi, algParams, outParams )
+function [ChainHist] = RunMCMCSimForBPHMM( data, Psi, algParams, outParams, model )
 tic;
 
-% ------------------------------------------------- Save Initial Config
-logPr = calcJointLogPr_BPHMMState( Psi, data );
-ChainHist = recordMCMCHistory_BPHMM( 0, outParams, [], Psi, logPr  );
+if isfield( Psi, 'F' )
+    % Stating chain from scratch
+    n = 0;
+    logPr = calcJointLogPr_BPHMMState( Psi, data );
+    ChainHist = recordMCMCHistory_BPHMM( 0, outParams, [], Psi, logPr  );
 
-fprintf( 'Initial Config: \n', outParams.jobID, outParams.taskID );
-printMCMCSummary_BPHMM( 0, Psi, logPr, algParams); 
+    fprintf( 'Initial Config: \n' );
+    printMCMCSummary_BPHMM( 0, Psi, logPr, algParams); 
+else
+    ChainHist = Psi;
+    Psi = unpackBPHMMState(  ChainHist.Psi(end), data, model );
+    logPr = calcJointLogPr_BPHMMState( Psi, data );
+    n = ChainHist.iters.Psi(end );
+    fprintf( 'Resumed Config: \n' );
+    printMCMCSummary_BPHMM( n, Psi, logPr, algParams); 
+end
 
 fprintf( 'Running MCMC Sampler %d : %d ... \n', outParams.jobID, outParams.taskID );
-for n=1:algParams.Niter
+for n=n+1:algParams.Niter
     
     % Perform 1 iteration of MCMC, moving to next Markov state!
     [Psi, Stats] = BPHMMsample( Psi, data, algParams );

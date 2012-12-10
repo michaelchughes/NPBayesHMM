@@ -1,0 +1,8 @@
+TO DO
+-------
+
+default no resampling of hmm hyper params (or at least until several hundred iterations)
+
+default so the # states is exactly one, not unique 2
+
+double check brnach situation... don't want Dev files appearing under Master branch
