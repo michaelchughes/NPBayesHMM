@@ -25,12 +25,17 @@ classdef SeqObsModel_Gaussian < SeqObsModel
         %  To initialize directly to given parameters
         %      ObsM = ObsM.setPrior( mu, precMu, degFree, ScaleMat )
         function obj = setPrior( obj, varargin )
+            obj.priorDef = struct();
+            obj.priorDef.doEmpCovScalePrior =0;
+            obj.priorDef.Scoef = 0;
             if strfind( class(varargin{1} ), 'SeqData' )
                 data = varargin{1};
                 obsM = varargin{2};
                 obj.prior.mu = zeros( data.D, 1 );
                 obj.prior.precMu = obsM.precMu;
                 obj.prior.degFree = max( obsM.degFree, data.D+2 );
+                obj.priorDef.doEmpCovScalePrior = obsM.doEmpCovScalePrior;
+                obj.priorDef.Scoef = obsM.Scoef;
                 if obsM.doEmpCovScalePrior
                     obj.prior.ScaleMat = obsM.Scoef * cov( data.Xdata', 1);
                 else
@@ -47,7 +52,7 @@ classdef SeqObsModel_Gaussian < SeqObsModel
                 obj.prior.precMu = varargin{2};
                 obj.prior.degFree = varargin{3};
                 obj.prior.ScaleMat = varargin{4};
-            end
+            end            
         end
         
         % ==================================================== GET Xstats
@@ -67,7 +72,7 @@ classdef SeqObsModel_Gaussian < SeqObsModel
                 Xkk = data.seq(ii);
                 Xkk = Xkk(:, stateSeq(ii).z == kk );
                 nNew = size(Xkk,2);
-                if obj.Xstats(kk).nObs == 0
+                if length(obj.Xstats)<kk || obj.Xstats(kk).nObs == 0
                     obj.Xstats(kk).nObs = nNew;
                     obj.Xstats(kk).Xsum = sum(Xkk,2);
                     obj.Xstats(kk).XXsum = Xkk*Xkk';
@@ -101,13 +106,13 @@ classdef SeqObsModel_Gaussian < SeqObsModel
             if ~exist('PP','var')
                 PP = obj.prior;
             end
-            retStr = 'Normal Inv Wishart';
-            if all( PP.mu == 0 )
-                retStr = [retStr ' zero mean'];
-            else
-                retStr = [retStr ' non-zero mean'];
+            retStr = 'Norm-InvWish. Mu0=0, dFree=%d,';
+            if obj.priorDef.doEmpCovScalePrior
+                retStr = [retStr ' S0=%.2f*EmpCov.'];
+            else                
+                retStr = [retStr ' S0=%.2f*eye.'];
             end
-            
+            retStr = sprintf( retStr, obj.prior.degFree, obj.priorDef.Scoef );
         end
         
         function PP = getPosteriorParams( obj, Xstats )
@@ -188,7 +193,7 @@ classdef SeqObsModel_Gaussian < SeqObsModel
             end
             Xseq = data.seq(ii);
             T = size( Xseq,2);
-            logSoftEv = zeros( obj.K, T );
+            logSoftEv = -inf( obj.K, T );
             for kk = kIDs
                 cholInvSigma = chol( obj.theta(kk).invSigma );
                 logDetInvSigma = 2*sum( log( diag( cholInvSigma) ) );
@@ -210,8 +215,8 @@ classdef SeqObsModel_Gaussian < SeqObsModel
             if ~exist( 'ks', 'var' )
                 ks = 1:obj.K;
             end
-            if exist( 'data', 'var' )  && ~isempty(data)
-                obj = obj.updateAllXSuffStats(  horzcat(stateSeq(:).z), data, ks );
+            if exist( 'data', 'var' ) && ~isempty( data )
+                obj = obj.updateAllXSuffStats(  horzcat(stateSeq(:).z), data, ks);
             end
             LOG_PI =  1.144729885849400;
             P0 = obj.prior;
@@ -225,7 +230,7 @@ classdef SeqObsModel_Gaussian < SeqObsModel
                     logPr(kk) = ...
                         logMvGamma(0.5*PN.degFree,D) - logMvGamma(0.5*P0.degFree,D) ...
                         + 0.5*P0.degFree*log( det( P0.ScaleMat ) )   ...
-                        - 0.5*PN.degFree  *log( det( PN.ScaleMat ) ) ...
+                        - 0.5*PN.degFree*log( det( PN.ScaleMat ) ) ...
                         + 0.5*D*log( P0.precMu / PN.precMu );
                 end
             end
