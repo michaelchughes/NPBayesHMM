@@ -77,3 +77,4 @@ end
 
 logQ = log( ps(choice)/sum(ps)  );
 
+assert( ~isnan( logQ ), 'Bad Q Calculation!' );

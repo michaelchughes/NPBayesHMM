@@ -92,8 +92,11 @@ classdef HMMTransModel
         % INPUT:
         %   F : N x K feature matrix
         %   EtaAll : N x1 cell array, where EtaAll{ii} is K x K matrix
-        function obj = updateAllEta( obj, F, EtaAll )
-           for ii = 1:size(F,1)
+        function obj = updateAllEta( obj, F, EtaAll, seqIDs )
+           if ~exist( 'seqIDs', 'var' )
+               seqIDs = 1:size(F,1);
+           end
+           for ii = seqIDs
               kIDs = find( F(ii,:) );
               obj.seq(ii).availFeatIDs = kIDs;
               obj.seq(ii).eta = EtaAll{ii}( kIDs, kIDs ); 

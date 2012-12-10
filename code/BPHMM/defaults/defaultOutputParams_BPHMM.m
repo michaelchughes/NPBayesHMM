@@ -37,7 +37,7 @@ elseif TL <= 2*3600 || Niter <= 5000
     settings.statsEvery = 5;
 else
     settings.saveEvery = 50;
-    settings.printEvery = 100;
+    settings.printEvery = 50;
     settings.logPrEvery = 10;    
     settings.statsEvery = 10;
 end

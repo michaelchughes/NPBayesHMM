@@ -61,11 +61,18 @@ logPr_Prop = calcJointLogPr_BPHMMState( propPsi );
 
 logQ_Hastings = logQ_Rev.all - logQ.all;
 if algParams.doAnneal
-    logQ_Hastings = Psi.invTemp * logQ_Hastings;
+    assert( ~isnan( logQ_Hastings ), 'Badness!' );
+    if Psi.invTemp == 0 && isinf(logQ_Hastings)
+        logQ_Hastings = -Inf; % always want to reject this proposal
+        % this is a sign of something seriously bad with construction
+    else
+        logQ_Hastings = Psi.invTemp * logQ_Hastings;
+    end
 end
 
 logPrAccept = logPr_Prop.all - logPr_Cur.all + logQ_Hastings;
 rho = exp( logPrAccept );
+assert( ~isnan( rho ), 'Accept rate should never be NaN!' );
 rho = min(1, rho);
 doAccept = rand < rho;
 

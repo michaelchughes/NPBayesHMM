@@ -31,7 +31,7 @@ else
     taskID = varargin{2};
     DATA = loadSamplerOutput( jobID, taskID, {'iters', 'Psi'} );
        
-    if length( varargin ) >= 3
+    if length( varargin ) >= 3 && varargin{3} >= 0
         queryIter = varargin{3};
         [~, idx] = min( abs( queryIter - DATA.iters.Psi ) );
     else
@@ -73,6 +73,8 @@ colormap bone;
 colorbar(  'YTick', [0 1 2],       'YTickLabel', {'Disabled', 'Available', 'Active'});
 
 ticks = get( gca, 'YTick');
+ticks = ticks( ticks >= 1 );
+ticks = ticks( ticks <= length(objIDs) );
 set( gca, 'YTickLabel', objIDs(ticks) );
 
 end

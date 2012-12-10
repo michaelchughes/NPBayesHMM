@@ -40,7 +40,7 @@ else
         GT = data;
     end
     
-    if length( varargin ) >= 3
+    if length( varargin ) >= 3 && varargin{3} >= 0
         queryIter = varargin{3};
         [~, idx] = min( abs( queryIter - DATA.iters.Psi ) );
     else
@@ -60,8 +60,8 @@ end
 
 if length( objIDs ) > MAX_NUM_OBJ
     objIDs = objIDs( 1:MAX_NUM_OBJ );
-    fprintf( 'Showing sequences %d - %d\n', objIDs(1), objIDs(end) );
 end
+fprintf( 'Showing sequences %d - %d\n', objIDs(1), objIDs(end) );
 nObj = min( MAX_NUM_OBJ, length( objIDs ) );
 
 % ------------------------------------------  Read in first Tmax of each sequence

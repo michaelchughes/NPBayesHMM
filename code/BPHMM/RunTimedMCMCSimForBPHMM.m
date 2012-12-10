@@ -26,7 +26,7 @@ logPr = calcJointLogPr_BPHMMState( Psi, data );
 ChainHist = recordMCMCHistory_BPHMM( 0, outParams, [], Psi, logPr  );
 
 fprintf( 'Initial Config: \n', outParams.jobID, outParams.taskID );
-printMCMCSummary_BPHMM( 0, Psi, logPr, algParams); 
+printTimedMCMCSummary_BPHMM( 0, Psi, logPr, algParams); 
 
 fprintf( 'Running MCMC Sampler %d : %d ... \n', outParams.jobID, outParams.taskID );
 n = 0;

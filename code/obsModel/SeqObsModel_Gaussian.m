@@ -25,12 +25,17 @@ classdef SeqObsModel_Gaussian < SeqObsModel
         %  To initialize directly to given parameters
         %      ObsM = ObsM.setPrior( mu, precMu, degFree, ScaleMat )
         function obj = setPrior( obj, varargin )
+            obj.priorDef = struct();
+            obj.priorDef.doEmpCovScalePrior =0;
+            obj.priorDef.Scoef = 0;
             if strfind( class(varargin{1} ), 'SeqData' )
                 data = varargin{1};
                 obsM = varargin{2};
                 obj.prior.mu = zeros( data.D, 1 );
                 obj.prior.precMu = obsM.precMu;
                 obj.prior.degFree = max( obsM.degFree, data.D+2 );
+                obj.priorDef.doEmpCovScalePrior = obsM.doEmpCovScalePrior;
+                obj.priorDef.Scoef = obsM.Scoef;
                 if obsM.doEmpCovScalePrior
                     obj.prior.ScaleMat = obsM.Scoef * cov( data.Xdata', 1);
                 else
@@ -47,7 +52,7 @@ classdef SeqObsModel_Gaussian < SeqObsModel
                 obj.prior.precMu = varargin{2};
                 obj.prior.degFree = varargin{3};
                 obj.prior.ScaleMat = varargin{4};
-            end
+            end            
         end
         
         % ==================================================== GET Xstats
@@ -101,13 +106,13 @@ classdef SeqObsModel_Gaussian < SeqObsModel
             if ~exist('PP','var')
                 PP = obj.prior;
             end
-            retStr = 'Normal Inv Wishart';
-            if all( PP.mu == 0 )
-                retStr = [retStr ' zero mean'];
-            else
-                retStr = [retStr ' non-zero mean'];
+            retStr = 'Norm-InvWish. Mu0=0, dFree=%d,';
+            if obj.priorDef.doEmpCovScalePrior
+                retStr = [retStr ' S0=%.2f*EmpCov.'];
+            else                
+                retStr = [retStr ' S0=%.2f*eye.'];
             end
-            
+            retStr = sprintf( retStr, obj.prior.degFree, obj.priorDef.Scoef );
         end
         
         function PP = getPosteriorParams( obj, Xstats )

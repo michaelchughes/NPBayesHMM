@@ -1,4 +1,4 @@
-function [] = plotLogPrVsTime( jobIDs, taskIDs, jobNames, varName )
+function [] = plotLogPrVsTime( jobIDs, taskIDs, jobNames, varargin )
 % View trace plots of joint log probability for sampler state at each
 %    recorded iteration of the sampler chain. Useful for diagnosing
 %    convergence and mixing rates, and comparing multiple runs.
@@ -14,8 +14,10 @@ function [] = plotLogPrVsTime( jobIDs, taskIDs, jobNames, varName )
 %       plotLogPr( <jobID vector>, <taskID vector>, {'A', 'B', 'C', ...}  )
 % ______________________________________________________________________________
 
-if ~exist( 'varName', 'var' ) || isempty( varName )
+if isempty( varargin )
     varName = 'all';
+elseif ischar( varargin{1} )
+    varName = varargin{1};
 end
 
 figure;
@@ -61,6 +63,10 @@ for jobID = jobIDs
         end
         
         styleStr = '.-';
+        while length( times ) > 200
+           times = times(1:2:end);
+           logPr = logPr(1:2:end);
+        end
         plot( times, logPr, styleStr, 'MarkerSize', 15, 'LineWidth', 2, ...
                'HandleVisibility', taskVis, 'Color', curColor );
     end

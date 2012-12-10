@@ -78,6 +78,18 @@ randomseed( [SEED 1 2] );
 %   so that different sampling algs can be compared on *same* init state
 [Psi, algParams, outParams] = initParams.InitFunc( data, model, initParams, algParams, outParams );
 
+if outParams.doPrintHeaderInfo
+    fprintf( '\t Emission Params : sampled from posterior given init stateSeq \n' );
+    fprintf( 'Hyperparameters: \n' );
+    fprintf( '\t            IBP mass param = %5.1f    ( resampling %d ) \n', model.bpM.gamma, algParams.BP.doSampleMass );
+    fprintf( '\t            IBP conc param = %5.1f    ( resampling %d ) \n', model.bpM.c,     algParams.BP.doSampleConc );
+    fprintf( '\t           HMM trans param = %5.1f    ( resampling %d ) \n', Psi.TransM.prior.alpha, algParams.HMM.doSampleHypers );
+    fprintf( '\t    HMM trans sticky param = %5.1f    ( resampling %d ) \n', Psi.TransM.prior.kappa, algParams.HMM.doSampleHypers );
+    fprintf( '\t        HMM emission param = %9s  \n', Psi.ThetaM.getParamDescr() );
+end
+
+
+
 % ================================================= RUN INFERENCE
 if isfield( algParams, 'TimeLimit' ) && ~isempty( algParams.TimeLimit )
   ChainHist = RunTimedMCMCSimForBPHMM( data, Psi, algParams, outParams);

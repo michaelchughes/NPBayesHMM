@@ -8,8 +8,6 @@
 #$ -l long
 # ------ send to particular machine
 #$ -q '*@@ang'
-# ------ can use up to ?GB of memory
-#$ -l vf=2G
 # put stdout and stderr files in the right place for your system.
 #   NOTE that $TASK_ID is the correct var here
 #          but not in rest of script (where SGE_TASK_ID is correct)

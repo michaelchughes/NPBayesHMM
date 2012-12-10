@@ -30,12 +30,18 @@ classdef SeqObsModel_ARGaussian < SeqObsModel
         %  To initialize directly to given parameters
         %      ObsM = ObsM.setPrior( MeanMat, invAScaleMat, degFree, ScaleMat )
         function obj = setPrior( obj, varargin )
+            obj.priorDef.doEmpCov = 0;
+            obj.priorDef.doEmpCovFirstDiff = 0;
+            obj.priorDef.Scoef = 0;
             if strfind( class(varargin{1} ), 'SeqData' )
                 data = varargin{1};
                 obsM = varargin{2};                
                 obj.prior.MeanMat = zeros( data.D, data.D*obj.R );
                 obj.prior.invAScaleMat = obsM.Scoef*eye( data.D*obj.R, data.D*obj.R);
                 obj.prior.degFree = max( obsM.degFree, data.D+2 );
+                obj.priorDef.doEmpCov = obsM.doEmpCov;
+                obj.priorDef.doEmpCovFirstDiff = obsM.doEmpCovFirstDiff;
+                obj.priorDef.Scoef  = obsM.Scoef;                
                 if obsM.doEmpCov
                     obj.prior.ScaleMat = obsM.Scoef * cov( data.Xdata', 1);
                 elseif obsM.doEmpCovFirstDiff
@@ -131,7 +137,15 @@ classdef SeqObsModel_ARGaussian < SeqObsModel
             if ~exist('PP','var')
                 PP = obj.prior;
             end
-            retStr = 'Matrix Normal Inv Wishart';            
+            retStr = 'MNIW. dFree=%d,';
+            if obj.priorDef.doEmpCov
+                retStr = [retStr ' S0=%.2f*EmpCov'];
+            elseif obj.priorDef.doEmpCovFirstDiff                
+                retStr = [retStr ' S0=%.2f*FirstDiffEmpCov'];
+            else
+                retStr = [retStr ' S0=%.2f*eye'];            
+            end
+            retStr = sprintf( retStr, obj.prior.degFree, obj.priorDef.Scoef );
         end
 
         function PP = getPosteriorParams( obj, Xstats )
