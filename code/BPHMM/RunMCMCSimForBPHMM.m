@@ -32,6 +32,7 @@ if isfield( Psi, 'F' )
 else
     ChainHist = Psi;
     Psi = unpackBPHMMState(  ChainHist.Psi(end), data, model );
+    
     logPr = calcJointLogPr_BPHMMState( Psi, data );
     n = ChainHist.iters.Psi(end );
     fprintf( 'Resumed Config: \n' );

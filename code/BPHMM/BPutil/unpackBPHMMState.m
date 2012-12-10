@@ -1,4 +1,10 @@
 function Psi = unpackBPHMMState( sPsi, data, model );
+% unpackBPHMMState : convert stored sampler state into fully usable one
+% EXPLANATION:
+% HMM parameters for transitions + emissions are represented as objects
+% but this takes up lots of room when storing results for many iterations
+%   so we store the objects as raw numeric parameters
+%   and then rebuild by calling this function
 
 Psi.F = sPsi.F;
 Psi.stateSeq = sPsi.stateSeq;
@@ -9,7 +15,15 @@ Psi.bpM.c     = sPsi.c;
 F = Psi.F;
 TransM = HMMTransModel(  size(F,1), size(F,2) );
 
-TransM = TransM.setPrior( model.hmmM.alpha, model.hmmM.kappa,...
+if isfield( sPsi, 'alpha' )
+    alph = sPsi.alpha;
+    kapp = sPsi.kappa;
+else
+    alph = model.hmmM.alpha;
+    kapp = model.hmmM.kappa;
+end
+
+TransM = TransM.setPrior( alph, kapp, ...
     model.hmmM.prior.a_alpha, model.hmmM.prior.b_alpha, ...
         model.hmmM.prior.a_kappa, model.hmmM.prior.b_kappa );
 for ii = 1:size( F, 1)
