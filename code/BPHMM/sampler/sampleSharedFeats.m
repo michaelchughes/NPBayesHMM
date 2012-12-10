@@ -74,7 +74,7 @@ end
 
 % -------------------- Repack
 Psi.F = F;
-Psi.TransM = Psi.TransM.updateAllEta( F, PropEta );
+Psi.TransM = Psi.TransM.updateAllEta( F, PropEta, seqIDs );
 Psi.cache.logSoftEv = logSoftEv;
 Psi.cache.logMargPrObs = logMargPrObs;
 Psi = reallocateFeatIDs( Psi );

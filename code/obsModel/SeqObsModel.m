@@ -8,6 +8,7 @@ classdef SeqObsModel
         D;
         theta;
         prior;
+        priorDef;
         Xstats;
         name;
     end

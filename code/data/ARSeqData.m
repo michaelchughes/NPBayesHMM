@@ -29,7 +29,11 @@ classdef ARSeqData < SeqData
                 N = Q.N;
                 
                 for ii = 1:N
-                    obj = addSeq( obj, Q.seq(ii), Q.name(ii), Q.zTrue(ii) );
+                    if isprop( Q, 'zTrueAll') && ~isempty( Q.zTrueAll )
+                        obj = addSeq( obj, Q.seq(ii), Q.name(ii), Q.zTrue(ii) );
+                    else
+                        obj = addSeq( obj, Q.seq(ii), Q.name(ii) );
+                    end
                 end
                 
             end

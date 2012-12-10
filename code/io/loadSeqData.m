@@ -15,6 +15,8 @@ switch datasetName
         data = genToySeqData_Gaussian( Preproc.nStates, Preproc.obsDim, Preproc.nObj, Preproc.T );
     case {'Mocap6'}
         data = readSeqDataFromPlainText( '../data/mocap6/' );
+    case {'MocapBIG'}
+        data = readSeqDataFromPlainText( '/data/liv/mhughes/data/MoCapBIG/txt/' );
     otherwise
         error( 'Unrecognized data set name' );
 end
