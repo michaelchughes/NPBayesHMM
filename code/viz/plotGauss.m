@@ -33,8 +33,9 @@ end
 Sigma = Sigma(1:2, 1:2, :);
 for kk = 1:K
     taskVis = 'on';
-    for R = linspace(0.1, 2, 4)
-        
+    %for R = linspace(0.1, 2, 4)
+    for R = linspace(0.5, 2, 2)
+         
         t = -pi:.01:pi;
         k = length(t);
         x = R*sin(t);
