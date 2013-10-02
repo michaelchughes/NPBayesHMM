@@ -5,6 +5,7 @@ algP.Niter = 50;
 
 algP.doSampleFShared = 1;
 algP.doSampleFUnique = 1;
+algP.doSampleUniqueZ = 0;
 algP.doSplitMerge = 0;
 algP.doSplitMergeRGS = 0;
 algP.doSMNoQRev = 0; % ignore proposal prob in accept ratio... not valid!
@@ -32,7 +33,10 @@ algP.HMM.var_kappa = 10;
 
 % Reversible Jump Proposal settings
 algP.RJ.doHastingsFactor = 1;
-algP.theta.birthPropDistr = 'DataDriven';
-algP.theta.minW = 15; 
-algP.theta.maxW = 100;
+algP.RJ.birthPropDistr = 'DataDriven';
+algP.RJ.minW = 15; 
+algP.RJ.maxW = 100;
 
+algP.doAnneal = 0;
+algP.Anneal.T0 = 100;
+algP.Anneal.Tf = 10000;

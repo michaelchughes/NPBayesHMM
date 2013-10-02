@@ -45,6 +45,8 @@ if ischar( s )
     
 elseif strcmp( class(s), 'double' )
     d = s;
+elseif islogical(s)
+    d = double(s);
 elseif isnumeric(s)
     d = str2double( num2str(s) );
 elseif strcmp( class(s), 'function_handle'  )

@@ -22,7 +22,7 @@ for ii = 1:data.N
     fclose(fid);    
 end
 
-if ~isempty( data.zTrue(1) )
+if isfield( data, 'zTrue' ) && ~isempty( data.zTrue(1) )
    fid = fopen( fullfile( outputPath, ['zTrue.dat'] ), 'w');
    namefid = fopen( fullfile( outputPath, ['SeqNames.txt'] ), 'w');
    for ii = 1:data.N
@@ -35,4 +35,11 @@ if ~isempty( data.zTrue(1) )
    end
    fclose(fid);
    fclose( namefid );
+else
+    % Save plain text file of sequence names (to define specific ordering)
+    namefid = fopen( fullfile( outputPath, ['SeqNames.txt'] ), 'w');
+    for ii = 1:data.N       
+        fprintf( namefid, '%s\n', data.name(ii) );
+    end
+    fclose( namefid );
 end

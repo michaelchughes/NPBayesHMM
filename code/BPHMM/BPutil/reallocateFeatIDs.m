@@ -29,7 +29,7 @@ if isfield( Psi, 'ThetaM' )
 Psi.ThetaM = Psi.ThetaM.reallocateFeatIDs( keepIDs );
 end
 
-if isfield( Psi, 'stateSeq' )
+if isfield( Psi, 'stateSeq' ) && length(Psi.stateSeq)== size(Psi.F,1)
     stateSeq = Psi.stateSeq;
     for ii = 1:size(Psi.F,1)        
         for jj = 1:length( keepIDs )

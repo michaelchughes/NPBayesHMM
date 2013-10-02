@@ -51,7 +51,6 @@ else
 end
 
 K = length( theta );
-K = min( K, MAX_K );
 
 if ~exist('figH','var')
     figH = gca;
@@ -60,9 +59,14 @@ end
 if exist( 'stateSeq', 'var' )
     Zall = horzcat( stateSeq(:).z );
     N = length( Zall );
-    [~, sortIDs] = sort( histc( Zall, 1:K ), 'descend' );
+    [Zcounts, sortIDs] = sort( histc( Zall, 1:K ), 'descend' );
+    sortIDs = sortIDs( Zcounts > 0 );
+    K = length( sortIDs );
+    K = min( K, MAX_K );
     theta = theta( sortIDs(1:K) );
 else
+    
+    K = min( K, MAX_K );
     theta = theta( 1:K );
 end
 

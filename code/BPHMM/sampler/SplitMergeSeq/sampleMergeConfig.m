@@ -101,7 +101,7 @@ for aa = [ otherObjIDs( randperm( length(otherObjIDs) ) ) anchorObjIDs]
 end
 
 if isempty(TargetPsi)
-propThetaM = propThetaM.updateAllXSuffStats( horzcat(propStateSeq(:).z), data );
+    propThetaM = propThetaM.updateAllXSuffStats( horzcat(propStateSeq(:).z), data );
 end
 
 mergePsi.F = propF;

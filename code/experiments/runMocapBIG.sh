@@ -1,5 +1,5 @@
 #!/bin/bash 
-#  SYNTAX:  runMocap6.sh <infName=SM> <initName=one> <timeLimit=# seconds>
+#  SYNTAX:  runMocap6.sh <infName=SM> <initName=seq> <timeLimit=# seconds>
 #$ -S /bin/sh 
 #$ -cwd 
 # ------ attach job number
@@ -46,7 +46,7 @@ matlabpath=/local/projects/matlab/current/bin/
 export LD_LIBRARY_PATH=$matlabpath;
 #MYPREFIX="dbstop if error; cd $PROJHOME; addpath( genpath( '.'));"
 MYPREFIX="cd $PROJHOME; addpath( genpath( '.'));"
-MYCMD="RunMocap6Experiment $JOB_ID $SGE_TASK_ID $infName $initName $TimeLimit"
+MYCMD="RunMocapBIGExperiment $JOB_ID $SGE_TASK_ID $infName $initName $TimeLimit"
 
 echo "EXECUTING CMD:"
 echo "              "$MYPREFIX

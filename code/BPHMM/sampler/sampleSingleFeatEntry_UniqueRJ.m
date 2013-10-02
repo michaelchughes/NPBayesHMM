@@ -37,14 +37,19 @@ uCur = length(uniqueFeatIDs);
 propEta_ii = TransM.sampleEtaProposal_UniqueBirth( ii );
 
 % -------------------------------  Theta prop
-switch algParams.theta.birthPropDistr
+switch algParams.RJ.birthPropDistr
     case {'Prior','prior'}
         choice = 1;
         wstart = 0; wend = 0;
         [thetaStar] = ThetaM.sampleThetaProposal_BirthPrior( );
         propThetaM = ThetaM.insertTheta( thetaStar );
     case {'DataDriven', 'DD', 'datadriven'}
-        [wstart, wend, L] = drawRandomSubwindow( data.Ts(ii), algParams.theta.minW, algParams.theta.maxW );
+        if isfield( algParams, 'Debug' ) && isfield( algParams.Debug, 'wstart' )        
+            wstart = algParams.Debug.wstart;
+            wend   = algParams.Debug.wend;
+        else
+            [wstart, wend, L] = drawRandomSubwindow( data.Ts(ii), algParams.RJ.minW, algParams.RJ.maxW );
+        end
         [thetaStar,PPmix, choice] = ThetaM.sampleThetaProposal_BirthDataDriven( ii, data, wstart:wend );
         propThetaM = ThetaM.insertTheta( thetaStar );
 end
@@ -57,6 +62,15 @@ MoveType = multinomial_single_draw( qs );
 
 if isfield( algParams, 'Debug' )
     MoveType = algParams.Debug.MoveType;
+    if MoveType == 0
+       if uCur == 0 || Kii==1
+           RhoTerms = struct('doBirth',0, 'doAccept',0);
+           return; 
+       else
+           MoveType = 1 + randsample( 1:uCur, 1);
+           assert( MoveType <= length(qs), 'Bad choice for debug move selector');
+       end
+    end
 end
 
 if MoveType == 1
@@ -72,7 +86,7 @@ if MoveType == 1
     % Birth move, keep around *all* of the entries in Pz
     propEta = propEta_ii;
     
-    switch algParams.theta.birthPropDistr
+    switch algParams.RJ.birthPropDistr
         case {'DataDriven', 'DD', 'datadriven'}   
             if algParams.RJ.doHastingsFactor
             logPrThetaStar_prior = propThetaM.calcLogPrTheta( thetaStar );
@@ -107,7 +121,7 @@ else
     propEta = propEta_ii( keepFeatIDs, keepFeatIDs );
     
     % ----------------------------------------------- build theta
-    switch algParams.theta.birthPropDistr
+    switch algParams.RJ.birthPropDistr
         case {'DataDriven', 'DD', 'datadriven'}
             thetaStar = propThetaM.theta(kk);
             if algParams.RJ.doHastingsFactor
@@ -197,6 +211,8 @@ if doAccept
         if strcmp( descrStr, 'birth' )
             Psi.cache.logSoftEv{ii} = logSoftEv;
         end
+    elseif isfield( algParams, 'doAvoidCache' ) && algParams.doAvoidCache
+        assert( 1==1 ); % placeholder, skip caching!
     else
         Psi.cache.logMargPrObs(ii) = logMargPrObs_Prop;
         Psi.cache.logSoftEv{ii} = logSoftEv;
