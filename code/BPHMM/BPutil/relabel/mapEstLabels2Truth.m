@@ -4,7 +4,6 @@ function [relabeled_est_labels, hamming_dist, assignment] = mapEstLabels2Truth(t
 
 small_labels = map2smallestIntegers(true_labels,max(true_labels));
 assert( all( unique(small_labels) == unique(true_labels) ), 'BAD TRUE LABELS' );
-%est_labels = map2smallestIntegers(est_labels,max(est_labels));
 
 [DM unique_true unique_est] = buildDistanceMatrix(true_labels,est_labels);
 

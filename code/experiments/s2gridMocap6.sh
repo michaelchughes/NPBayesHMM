@@ -2,10 +2,10 @@
 
 TimeLimit=36000
 
-for initName in 'one' #'unique5'
+for initName in 'unique5' #'unique5'
 do
 
-    for infName in  'SM+zDD+AnnealLin' 'SM+zDD' 'SM+DD+AnnealLin' 'SM+DD' #'SMnoqrev+DD'
+    for infName in  'Prior' #'SM+zDD+AnnealLin' 'SM+zDD' 'SM+DD+AnnealLin' 'SM+DD' #'SMnoqrev+DD'
     do
 
     COMMAND="runMocap6.sh $infName $initName $TimeLimit"
@@ -38,6 +38,11 @@ exit
 2134874 SM+zDD
 2134875 SM+cDD+AnnealLin
 2134876 SM+cDD
+
+2207266 Prior unique5
+
+runMocap6.sh Prior unique5 36000
+Your job-array 2207266.1-25:1 ("runMocap6.sh") has been submitted
 
 
 ########################## OCT 2012

@@ -21,7 +21,7 @@ end
 figure;
 set( gcf, 'Units', 'normalized', 'Position', [0.5 0.5 0.5 0.5] );
 if exist( 'jobNames', 'var' ) && ~isempty( jobNames )
-    plotColors  = get(0,'defaultAxesColorOrder'); %jet( length( jobNames )  );
+    plotColors  = get(0,'defaultAxesColorOrder');
     hold on;
 else
     plotColors = get(0,'defaultAxesColorOrder');

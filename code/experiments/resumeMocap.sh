@@ -6,8 +6,6 @@
 #$ -j n
 # ------ send to particular queue
 #$ -l vlong
-# ------ send to particular machine
-#$ -q '*@@ang'
 # put stdout and stderr files in the right place for your system.
 #   NOTE that $TASK_ID is the correct var here
 #          but not in rest of script (where SGE_TASK_ID is correct)

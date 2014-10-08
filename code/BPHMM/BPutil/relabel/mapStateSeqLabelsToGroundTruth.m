@@ -98,22 +98,3 @@ end
 
 
 end
-
-
-
-% If we have too many true features (more than # est states )
-%    then we need to add in a zero column for every "zero" in sortFeatIDs
-%     Ks = setdiff( 1:M, unique_est );
-%     emptyIDs = find( sortFeatIDs == 0 );
-%     K  = size(F,2);
-%     kk = 1;
-%     for aa = 1:M
-%         if sortFeatIDs(aa) == 0
-%             sortFeatIDs( aa ) = Ks(kk );
-%             kk = kk+1;
-%             %K = K + 1;
-%             %sortFeatIDs( aa ) = K;
-%         end
-%     end
-%F = [F zeros(length(data_struct), length(emptyIDs) )];
-%Ffrac = [Ffrac zeros( length(data_struct), length(emptyIDs) ) ];

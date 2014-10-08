@@ -28,21 +28,22 @@ if isfield( Psi, 'F' )
     ChainHist = recordMCMCHistory_BPHMM( 0, outParams, [], Psi, logPr  );
 
     fprintf( 'Initial Config: \n' );
-    printMCMCSummary_BPHMM( 0, Psi, logPr, algParams); 
+    printTimedMCMCSummary_BPHMM( 0, Psi, logPr, algParams); 
 else
     ChainHist = Psi;
     Psi = unpackBPHMMState(  ChainHist.Psi(end), data, model );
     logPr = calcJointLogPr_BPHMMState( Psi, data );
     n = ChainHist.iters.Psi(end );
     fprintf( 'Resumed Config: \n' );
-    printMCMCSummary_BPHMM( 0, Psi, logPr, algParams); 
+    printTimedMCMCSummary_BPHMM( 0, Psi, logPr, algParams); 
 end
 
 fprintf( 'Running MCMC Sampler %d : %d ... \n', outParams.jobID, outParams.taskID );
 
 while toc < algParams.TimeLimit
     n = n + 1;
-    
+    Psi.iter = n;
+
     % Perform 1 iteration of MCMC, moving to next Markov state!
     [Psi, Stats] = BPHMMsample( Psi, data, algParams );
     

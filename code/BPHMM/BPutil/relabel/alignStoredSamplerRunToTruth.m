@@ -1,75 +1,68 @@
-function [] = alignStoredSamplerRunToTruth( jobIDs, taskIDs, MIN_ITER )
+function [] = alignStoredSamplerRunToTruth( jobIDs, taskIDs, BURNFRAC )
+% For each given id of a stored sampler runs,
+%  align the recovered feature matrix F and state sequences z
+%  to the "true" labels available for that data
+% For each stored sample in the ChainHistory's Psi field,
+%  we add a corresponding "aligned" F,z pair in the 'A' field (A for align)
+%  of the ChainHistory
+% OUTPUT:
+%  no return values
+%  Instead, the stored SamplerOutput.mat file is altered
+%    to include aligned variables for each stored sampler:
+%    A.F     :
+%    A.Ffrac :
+%    A.stateSeq :
+
+if ~exist('MIN_ITER', 'var')
+    BURNFRAC = 0.8;
+end
 
 for jobID = jobIDs
     
     for taskID = taskIDs
 
-        data_struct = loadSamplerInfo( jobID, taskID, '', 'data_struct');
-        assert( isfield( data_struct(1), 'true_labels'), 'No ground truth labels to align!' );
+        data = loadSamplerInfo( jobID, taskID, 'data');
+        assert( isprop( data, 'zTrueAll'), 'No ground truth labels to align!' );
             
-        X = loadSamplerOutput( jobID, taskID );
+        ChainHist = loadSamplerOutput( jobID, taskID );
         
-        meanF = zeros( length( data_struct ), 100 );
-        meanFfrac = zeros( length(data_struct), 100);
+        meanF = zeros( data.N, 100 );
+        meanFfrac = zeros( data.N, 100);
         nSamps = 0;
         
         tic;
-        for storeID = 1:length( X.S )
+        for storeID = 1:length( ChainHist.Psi )
             
-            F = X.S( storeID ).F;
-            stateSeq = X.S( storeID ).stateSeq;
+            [alignedPsi] = alignPsiToTruth_OneToOne( ChainHist.Psi(storeID), data );
             
-            % Preprocess F to remove positive entries that 
-            %   dont actually explain significant data
-            % CUTOFF_THR defines minimize fraction of zseq that 
-            %   a positive feature must be assigned in order to count
-            Ffrac = double(F);
-            for ii = 1:size(F,1)
-               ks = find( F(ii,:)==1 );
-               for kk = 1:length(ks)
-                  kkINDS = stateSeq(ii).z == ks(kk);
-                  Ffrac(ii, ks(kk) ) = sum(kkINDS)/data_struct(ii).T;
-                  %if ( sum( kkINDS )/data_struct(ii).T ) < CUTOFF_THR
-                  %    F(ii, ks(kk) )  = 0;
-                  %end
-               end
+            ChainHist.A( storeID ) = alignedPsi;
+
+            if ChainHist.iters.Psi( storeID ) >= BURNFRAC * ChainHist.iters.Psi( end )
+                nSamps = nSamps +1;
+                aF = alignedPsi.F;
+                meanF( :, 1:size(aF,2) ) = meanF(:,1:size(aF,2) ) + alignedPsi.F;
+                meanFfrac(:, 1:size(aF,2) ) = meanFfrac( :, 1:size(aF,2) ) + alignedPsi.Ffrac;
             end
-            
-            [aF, aFfrac, aStateSeq, Hdist, nTrue] = mapStateSeqLabelsToGroundTruth( F, Ffrac, stateSeq, data_struct );
-            
-            X.A( storeID ).F = aF;
-            X.A( storeID ).Ffrac = aFfrac;
-            X.A( storeID ).stateSeq = aStateSeq;
-            X.A( storeID ).Hdist = Hdist;
-            
-            
-            if X.iters.S( storeID ) < MIN_ITER
-                continue;
-            end
-            nSamps = nSamps +1;
-            meanF( :, 1:size(aF,2) ) = meanF(:,1:size(aF,2) ) + aF;
-            meanFfrac(:, 1:size(aF,2) ) = meanFfrac( :, 1:size(aF,2) ) + aFfrac;
+
         end
         
         lastID = find( sum(meanF,1) > 0, 1, 'last');
+        nTrue = length( unique( data.zTrueAll ) );
         meanF = meanF( :, 1:max(nTrue,lastID) );
         meanF = meanF./nSamps;
         
         meanFfrac = meanFfrac( :, 1:max(nTrue, lastID)  );
         meanFfrac = meanFfrac./nSamps;
         
-        X.Summary.meanF = meanF;
-        X.Summary.meanFfrac = meanFfrac;
-        X.Summary.MIN_ITER  = MIN_ITER;
+        ChainHist.Summary.meanF = meanF;
+        ChainHist.Summary.meanFfrac = meanFfrac;
+        ChainHist.Summary.BURNFRAC  = BURNFRAC;
         
         
         
-        fid = fopen( '~/git/liv-video/SimulationResults.path' );
-        DATA_DIR = textscan( fid, '%s' );
-        fclose(fid);
-        DATA_DIR = DATA_DIR{1}{1};
-        savefilepath = fullfile( DATA_DIR, num2str(jobID), num2str(taskID), 'SamplerOutput.mat');
-        save( savefilepath, '-struct', 'X' );
+        fpath = getUserSpecifiedPath( 'SimulationResults' );
+        savefilepath = fullfile( fpath, num2str(jobID), num2str(taskID), 'SamplerOutput.mat');
+        save( savefilepath, '-struct', 'ChainHist' );
         
         fprintf( '... %.0f sec | completed align for job %d : %d. saved to file.\n', toc, jobID, taskID );
     end

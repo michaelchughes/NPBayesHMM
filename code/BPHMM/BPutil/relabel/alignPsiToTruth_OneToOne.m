@@ -15,12 +15,25 @@ Ztrue = data.zTrueAll;
 unique_true = unique( Ztrue );
 unique_est = unique( Zest );
 [ZestR, HamDist, AlignedIDs] = mapEstLabels2Truth( Ztrue, Zest);
+
+
 % AlignedIDs is a 1 x nUniqueEst vector
 %   where entry kk says which true label the kk-th feature aligns to
 
 TsCDF = data.aggTs;
 F = Psi.F;
-alignedSeq = Psi.stateSeq;
+stateSeq = Psi.stateSeq;
+
+Ffrac = double(F);
+for ii = 1:size(F,1)
+    ks = find( F(ii,:)==1 );
+    for kk = 1:length(ks)
+        kkINDS = stateSeq(ii).z == ks(kk);
+        Ffrac(ii, ks(kk) ) = sum(kkINDS)/data.Ts(ii);
+    end
+end
+alignedSeq = stateSeq;
+
 for ii = 1:length( alignedSeq );
     alignedSeq(ii).z = ZestR( TsCDF(ii)+1:TsCDF(ii+1)  );
     
@@ -37,14 +50,16 @@ if length( unique_est ) <= length( unique_true )
     alignedF = zeros( data.N, M );
     
     alignedF( :, AlignedIDs ) = F(:, unique_est );
-    %alignedFfrac = zeros( length(data_struct), M );
-    %alignedFfrac( :, AlignedIDs ) = Ffrac(:, unique_est );
+    alignedFfrac = zeros( data.N, M );
+    alignedFfrac( :, AlignedIDs ) = Ffrac(:, unique_est );
     
     % Finally, we need to fill in "bogus/deadbeat" features at the end
+    %  these are features NOT used by state sequences but appearing in F
+    %  so they should not align to any "true" sequence
     deadIDs = setdiff( 1:size( F,2 ), unique_est );
     if ~isempty( deadIDs )
-       alignedF( :, length(unique_est) + (1:length(deadIDs)) ) = F( :, deadIDs ); 
-       %alignedFfrac( :, length(unique_est) + (1:length(deadIDs)) ) = Ffrac( :, deadIDs ); 
+        alignedF( :, length(unique_est) + (1:length(deadIDs)) ) = F( :, deadIDs );
+        alignedFfrac( :, length(unique_est) + (1:length(deadIDs)) ) = Ffrac( :, deadIDs );
     end
     
 elseif size(F,2) > length( unique_true )
@@ -72,12 +87,13 @@ elseif size(F,2) > length( unique_true )
     end
     
     alignedF = F( :, sortFeatIDs );
-    %alignedFfrac = Ffrac( :, sortFeatIDs );
+    alignedFfrac = Ffrac( :, sortFeatIDs );
 end
 
 alignedPsi.F = alignedF;
+alignedPsi.Ffrac = alignedFfrac;
 alignedPsi.stateSeq = alignedSeq;
-
+alignedPsi.HDist = HDist;
 %alignedPsi.ThetaM = Psi.ThetaM.reallocateFeatIDs(  sortFeatIDs );
 %alignedPsi.TransM = Psi.TransM.reallocateFeatIDs(  sortFeatIDs );
 

@@ -25,3 +25,8 @@ for jj = 1:length( jobNames )
     plotStateSeq(  jobIDs(jj), 'best' );
     set(gcf, 'Name', sprintf('StateSeq_best_%s', jobNames{jj})  );
 end
+
+
+plotHammDistVsTime( jobIDs(1:4), 1:25, jobNames(1:4) );
+
+plotHammDistVsTime( jobIDs([1:2 4]), 1:25, jobNames([1:2 4]) );
