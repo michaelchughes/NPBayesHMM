@@ -32,6 +32,7 @@ if isfield( Psi, 'F' )
 else
     ChainHist = Psi;
     Psi = unpackBPHMMState(  ChainHist.Psi(end), data, model );
+    
     logPr = calcJointLogPr_BPHMMState( Psi, data );
     n = ChainHist.iters.Psi(end );
     fprintf( 'Resumed Config: \n' );
@@ -40,7 +41,8 @@ end
 
 fprintf( 'Running MCMC Sampler %d : %d ... \n', outParams.jobID, outParams.taskID );
 for n=n+1:algParams.Niter
-    
+    Psi.iter = n;
+
     % Perform 1 iteration of MCMC, moving to next Markov state!
     [Psi, Stats] = BPHMMsample( Psi, data, algParams );
     

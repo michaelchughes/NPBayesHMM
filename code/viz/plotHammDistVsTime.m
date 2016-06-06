@@ -1,4 +1,4 @@
-function [] = plotHammDist( jobIDs, taskIDs, jobNames, objIDs )
+function [] = plotHammDist( jobIDs, taskIDs, jobNames, objIDs, doHourly )
 % View trace plots of hamming distance for sampler state at each
 %    recorded iteration of the sampler chain.  Useful for diagnosing
 %    convergence and mixing rates.
@@ -24,12 +24,12 @@ for jobID = jobIDs
     
     doFirstTask = 1;
     for taskID = taskIDs
-        DATA = loadSamplerOutput( jobID, taskID , {'iters', 'A'} );
+        DATA = loadSamplerOutput( jobID, taskID , {'times', 'A'} );
         if isnumeric(DATA) && DATA == -1
             continue;
         end
         
-        iters = DATA.iters.Psi;
+        times = DATA.times.Psi;
         
         Ts = DATA.A(end).HDist.Ts( objIDs );
         Hdist = zeros( 1, length(DATA.A ) );
@@ -54,8 +54,18 @@ for jobID = jobIDs
             taskVis = 'on';
         end
         
-        styleStr = '.-';        
-        plot( iters, Hdist, styleStr, 'MarkerSize', 15, 'LineWidth', 2, 'HandleVisibility', taskVis, 'Color', curColor );
+        styleStr = '.-';   
+        
+        while length( times ) > 200
+           times = times(1:2:end);
+           Hdist = Hdist(1:2:end);
+        end
+        
+        if doHourly
+            times = times/3600;
+        end
+        
+        plot( times, Hdist, styleStr, 'MarkerSize', 15, 'LineWidth', 2, 'HandleVisibility', taskVis, 'Color', curColor );
         
     end
 end
@@ -68,8 +78,11 @@ end
 
 ylabel( 'Hamming Dist', 'FontSize', 18 );
 
-xlabel ('iteration', 'FontSize', 18);
-
+if doHourly
+xlabel ('CPU time (hours)', 'FontSize', 18);
+else
+xlabel ('CPU time (sec)', 'FontSize', 18);
+end
 grid on;
 set( gca, 'FontSize', 16 );
 end % main function

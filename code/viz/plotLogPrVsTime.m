@@ -14,10 +14,18 @@ function [] = plotLogPrVsTime( jobIDs, taskIDs, jobNames, varargin )
 %       plotLogPr( <jobID vector>, <taskID vector>, {'A', 'B', 'C', ...}  )
 % ______________________________________________________________________________
 
-if isempty( varargin )
-    varName = 'all';
-elseif ischar( varargin{1} )
-    varName = varargin{1};
+varName = 'all';
+doHourly = false;
+if ~isempty( varargin )
+    if isnumeric( varargin{1} )
+        if varargin{1}
+            doHourly = true;
+        else 
+            doHourly = false;
+        end
+    elseif ischar( varargin{1} )
+        varName = varargin{1};
+    end
 end
 
 figure;
@@ -67,6 +75,9 @@ for jobID = jobIDs
            times = times(1:2:end);
            logPr = logPr(1:2:end);
         end
+        if doHourly
+        times = times/3600;
+        end
         plot( times, logPr, styleStr, 'MarkerSize', 15, 'LineWidth', 2, ...
                'HandleVisibility', taskVis, 'Color', curColor );
     end
@@ -84,7 +95,11 @@ end
 
 ylabel( sprintf('log prob. %s', varName), 'FontSize', 18 );
 
-xlabel ('CPU time (sec)', 'FontSize', 18);
+if doHourly
+    xlabel ('CPU time (hours)', 'FontSize', 18);
+else
+    xlabel ('CPU time (sec)', 'FontSize', 18);
+end
 
 grid on;
 set( gca, 'FontSize', 16 );
