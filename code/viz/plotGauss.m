@@ -46,7 +46,7 @@ for kk = 1:K
         A = real((vv*sqrt(dd))');
         z = [x' y']*A;
         
-        plot(figH, z(:,1)+Mu(kk,1),z(:,2)+Mu(kk,2), '.', 'Color', MyColors(kk,:), 'HandleVisibility', taskVis);
+        plot(figH, z(:,1)+Mu(kk,1),z(:,2)+Mu(kk,2), '.', 'MarkerSize', 15, 'Color', MyColors(kk,:), 'HandleVisibility', taskVis);
         taskVis = 'off';
     end
     

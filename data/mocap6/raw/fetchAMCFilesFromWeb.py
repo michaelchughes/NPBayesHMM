@@ -18,7 +18,7 @@ trialInfo = dict()
 trialInfo[13] = [29, 30, 31] 
 trialInfo[14] = [6, 14, 20]
 
-'''
+
 L=0
 for kk in trialInfo.keys():
   print " ==================================== Subj %02d" % (kk )
@@ -34,7 +34,7 @@ for kk in trialInfo.keys():
     #    print urlPath
     return_code = call("wget -nv -O"+outPath+" "+urlPath, shell=True)
 print '... SUCCESS! %d total sequences acquired and stored in amc/ and asf/' % (L)
-'''
+
 
 # Now, extract human-readable summary of the actual joint angles tracked.
 #  only need to do this for one actor sequence,
