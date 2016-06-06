@@ -61,5 +61,7 @@ if nargout > 1
         logPrQ_z = logPrQ_z + sum( log( qs ) );
     end
 end
+assert( ~isnan( logPrQ_z ), 'Bad Q Calculation!' );
+
 
 end % main function

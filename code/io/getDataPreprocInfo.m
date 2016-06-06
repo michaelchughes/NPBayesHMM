@@ -37,7 +37,13 @@ switch lower(dataName)
         PP.obsDim = 12;
         PP.R = 1;
         PP.windowSize = 12;
-        PP.channelNames = MocapChannelNames;        
+        PP.channelNames = MocapChannelNames;  
+    case {'mocapbig'}
+        PP.nObj = 124;
+        PP.obsDim = 12;
+        PP.R = 1;
+        PP.windowSize = 12;
+        PP.channelNames = MocapChannelNames;  
 end
 
 % =============================================== UPDATE WITH USER INPUT

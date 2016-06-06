@@ -1,4 +1,4 @@
-function [] = plotLogPrVsTime( jobIDs, taskIDs, jobNames, varargin )
+function [] = plotTrace( jobIDs, taskIDs, varName )
 % View trace plots of joint log probability for sampler state at each
 %    recorded iteration of the sampler chain. Useful for diagnosing
 %    convergence and mixing rates, and comparing multiple runs.
@@ -14,10 +14,8 @@ function [] = plotLogPrVsTime( jobIDs, taskIDs, jobNames, varargin )
 %       plotLogPr( <jobID vector>, <taskID vector>, {'A', 'B', 'C', ...}  )
 % ______________________________________________________________________________
 
-if isempty( varargin )
+if ~exist( 'varName', 'var' ) || isempty( varName )
     varName = 'all';
-elseif ischar( varargin{1} )
-    varName = varargin{1};
 end
 
 figure;
@@ -36,15 +34,24 @@ for jobID = jobIDs
     
     doFirstTask = 1;
     for taskID = taskIDs
-        DATA = loadSamplerOutput( jobID, taskID , {'iters', 'times', 'logPr'} );
+        DATA = loadSamplerOutput( jobID, taskID , {'iters', 'Psi'} );
         if isnumeric(DATA) && DATA == -1
             continue;
         end
         
-        logPr = [ DATA.logPr(:).( varName ) ];
-       
-        times = DATA.times.logPr;
+        iters = DATA.iters.Psi;
 
+        Psi = DATA.Psi;
+        
+        switch varName
+            case {'alpha','kappa','gamma','c'}
+                Xvar = vertcat( Psi(:).(varName) );
+            case {'r'}
+                alphs = vertcat( Psi(:).alpha );
+                kaps  = vertcat( Psi(:).kappa );
+                Xvar  = alphs./kaps;
+        end
+        
         if exist( 'jobNames', 'var' )  && ~isempty( jobNames )
             jj = 1 + mod( find( jobID == jobIDs )-1, size(plotColors,1) );
             curColor = plotColors(jj,:);
@@ -63,11 +70,9 @@ for jobID = jobIDs
         end
         
         styleStr = '.-';
-        while length( times ) > 200
-           times = times(1:2:end);
-           logPr = logPr(1:2:end);
-        end
-        plot( times, logPr, styleStr, 'MarkerSize', 15, 'LineWidth', 2, ...
+        
+        
+        plot( iters, Xvar, styleStr, 'MarkerSize', 15, 'LineWidth', 2, ...
                'HandleVisibility', taskVis, 'Color', curColor );
     end
 end
@@ -82,9 +87,9 @@ if strcmp( varName, 'all' )
     varName = '';
 end
 
-ylabel( sprintf('log prob. %s', varName), 'FontSize', 18 );
+ylabel( sprintf('%s', varName), 'FontSize', 18 );
 
-xlabel ('CPU time (sec)', 'FontSize', 18);
+xlabel ('iteration', 'FontSize', 18);
 
 grid on;
 set( gca, 'FontSize', 16 );

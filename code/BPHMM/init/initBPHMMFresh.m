@@ -17,6 +17,9 @@ entryState = curStream.State;
 % Reset PRNG state to associate with specific *task*
 reset( RandStream.getGlobalStream(), outParams.taskID );
 
+if outParams.doPrintHeaderInfo
+    fprintf( 'Psi MCMC Chain State:\n' );
+end
 
 % --------------------------------------------------- Init Feature Matrix
 nObj = data.N;
@@ -98,16 +101,6 @@ end
 
 ThetaM = ThetaM.setPrior( data , model.obsM );
 ThetaM = ThetaM.sampleAllTheta( data, stateSeq );
-
-if outParams.doPrintHeaderInfo
-    fprintf( '\t Emission Params : sampled from posterior given init stateSeq \n' );
-    fprintf( 'Hyperparameters: \n' );
-    fprintf( '\t            IBP mass param = %5.1f    ( resampling %d ) \n', model.bpM.gamma, algParams.BP.doSampleMass );
-    fprintf( '\t            IBP conc param = %5.1f    ( resampling %d ) \n', model.bpM.c,     algParams.BP.doSampleConc );
-    fprintf( '\t           HMM trans param = %5.1f    ( resampling %d ) \n', TransM.prior.alpha, algParams.HMM.doSampleHypers );
-    fprintf( '\t    HMM trans sticky param = %5.1f    ( resampling %d ) \n', TransM.prior.kappa, algParams.HMM.doSampleHypers );
-    fprintf( '\t        HMM emission param = %9s  \n', ThetaM.getParamDescr() );
-end
 
 % ---------------------------- Repack
 Psi.F = F;

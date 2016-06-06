@@ -1,4 +1,4 @@
-function [] = RunMocap6Experiment( jobID, taskID, infName, initName, TimeLimit )
+function [] = RunMocapBIGExperiment( jobID, taskID, infName, initName, TimeLimit, Scoef )
 %INPUT
 %  jobID : integer/name of job
 %  taskID : integer/name of task
@@ -6,13 +6,16 @@ function [] = RunMocap6Experiment( jobID, taskID, infName, initName, TimeLimit )
 %  initName : {'one', 'unique5'}  indicates initialization
 %  TimeLimit : # of seconds to allow for MCMC
 
+if ~exist( 'Scoef', 'var' )
+    Scoef = 0.5;
+end
 
-dataP = {'Mocap6'};
-modelP = {};
+dataP = {'MocapBIG'};
+modelP = {'obsM.Scoef', Scoef};
 
 TimeLimit = force2double( TimeLimit );
 T0 = 50;
-Tf = 10000;
+Tf = 1000;
 switch infName
     case 'Prior'
         algP = {'doSampleFUnique', 1, 'doSplitMerge', 0, 'RJ.birthPropDistr', 'Prior'};         
@@ -20,22 +23,18 @@ switch infName
         algP = {'doSampleFUnique', 1, 'doSplitMerge', 0, 'RJ.birthPropDistr', 'DataDriven'};  
     case {'zDD'}
         algP = {'doSampleFUnique', 0, 'doSampleUniqueZ', 1, 'doSplitMerge', 0, 'RJ.birthPropDistr', 'DataDriven'};       
-
     case 'SM'                
         algP = {'doSampleFUnique', 0, 'doSplitMerge', 1};         
     case 'SM+DD'               
         algP = {'doSampleFUnique', 1, 'doSampleUniqueZ', 0, 'doSplitMerge', 1, 'RJ.birthPropDistr', 'DataDriven'};                      
-    case 'SM+DD+AnnealLin'        
-        algP = {'doSampleFUnique', 1, 'doSampleUniqueZ', 0, 'doSplitMerge', 1, 'RJ.birthPropDistr', 'DataDriven', 'doAnneal', 'Lin', 'Anneal.T0', T0, 'Anneal.Tf', Tf};               
-
     case 'SM+zDD'               
         algP = {'doSampleFUnique', 0, 'doSampleUniqueZ', 1, 'doSplitMerge', 1, 'RJ.birthPropDistr', 'DataDriven'};       
+    case 'SM+DD+Anneal'        
+        algP = {'doSampleFUnique', 1, 'doSampleUniqueZ', 0, 'doSplitMerge', 1, 'RJ.birthPropDistr', 'DataDriven', 'doAnneal', 1, 'Anneal.T0', T0, 'Anneal.Tf', Tf};      
     case 'SM+zDD+AnnealExp'        
         algP = {'doSampleFUnique', 0, 'doSampleUniqueZ', 1, 'doSplitMerge', 1, 'RJ.birthPropDistr', 'DataDriven', 'doAnneal', 'Exp', 'Anneal.T0', T0, 'Anneal.Tf', Tf};               
     case 'SM+zDD+AnnealLin'        
         algP = {'doSampleFUnique', 0, 'doSampleUniqueZ', 1, 'doSplitMerge', 1, 'RJ.birthPropDistr', 'DataDriven', 'doAnneal', 'Lin', 'Anneal.T0', T0, 'Anneal.Tf', Tf};               
-
-
     % NON VALID OPTIONS (for experiments only)
     case 'SMnoqrev'               
         algP = {'doSampleFUnique', 0, 'doSMNoQRev', 1}; 

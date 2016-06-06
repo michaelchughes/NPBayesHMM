@@ -1,8 +1,5 @@
-function [] = plotFeatureCounts( jobIDs, taskIDs,  splitName , jobNames, varName )
+function [] = plotFeatureCounts( jobIDs, taskIDs,  jobNames, varName )
 
-if ~exist( 'splitName', 'var' )
-    splitName = '';
-end
 if ~exist( 'varName', 'var' )
     varName = 'total';
 end
@@ -24,28 +21,29 @@ end
 for jobID = jobIDs
     
     for taskID = taskIDs
-        DATA = loadSamplerOutput( jobID, taskID, splitName, {'iters', 'S'} );        
+        DATA = loadSamplerOutput( jobID, taskID, {'iters', 'Psi'} );        
         if isnumeric(DATA) && DATA == -1
             continue;
         end
         
+        
         % ---------------------------------  Across All Iterations
-        nPerObj = zeros( 3, length( DATA(1).S )  );
+        nPerObj = zeros( 3, length( DATA.Psi )  );
 
-        nTotal = zeros( 1, length( DATA(1).S )  );
-        nActive = zeros( 1, length( DATA(1).S )  );
-        for iter = 1:length( DATA(1).S )
+        nTotal = zeros( 1, length(DATA.Psi)  );
+        nActive = zeros( 1, length( DATA.Psi )  );
+        for iter = 1:length( DATA.Psi )
             if strcmp( varName, 'active' )
-                nActive(iter) = countActiveStates( DATA.S(iter).F, DATA.S(iter).stateSeq );
+                nActive(iter) = countActiveStates( DATA.Psi(iter).F, DATA.Psi(iter).stateSeq );
             elseif strcmp( varName, 'perObj' )
-                nPerObj(1,iter) =  prctile(  sum( DATA.S(iter).F, 2) , 10 );
-                nPerObj(2,iter) =  prctile(  sum( DATA.S(iter).F, 2) , 50 );
-                nPerObj(3,iter) =  prctile(  sum( DATA.S(iter).F, 2) , 90 );
+                nPerObj(1,iter) =  prctile(  sum( DATA.Psi(iter).F, 2) , 10 );
+                nPerObj(2,iter) =  prctile(  sum( DATA.Psi(iter).F, 2) , 50 );
+                nPerObj(3,iter) =  prctile(  sum( DATA.Psi(iter).F, 2) , 90 );
 
             end
             
             
-            nTotal(iter)  = size( DATA.S(iter).F ,2);
+            nTotal(iter)  = size( DATA.Psi(iter).F ,2);
         end
         
         
@@ -64,16 +62,16 @@ for jobID = jobIDs
         end
         
         if strcmp( varName, 'active' )
-            plot( DATA.iters.S,  nActive, '.-', 'MarkerSize', 15, 'LineWidth', 2, 'HandleVisibility', taskVis, 'Color', curColor );
+            plot( DATA.iters.Psi,  nActive, '.-', 'MarkerSize', 15, 'LineWidth', 2, 'HandleVisibility', taskVis, 'Color', curColor );
         elseif strcmp( varName, 'perObj' )
-            plot( DATA.iters.S,  nPerObj(2,:) , '-', 'MarkerSize', 15, 'LineWidth', 2, 'HandleVisibility', taskVis, 'Color', curColor );
+            plot( DATA.iters.Psi,  nPerObj(2,:) , '-', 'MarkerSize', 15, 'LineWidth', 2, 'HandleVisibility', taskVis, 'Color', curColor );
             
             if length( jobIDs ) <= 3
-                plot( DATA.iters.S,  nPerObj(1,:) , '--', 'MarkerSize', 15, 'LineWidth', 2, 'HandleVisibility', 'off', 'Color', curColor );
-                plot( DATA.iters.S,  nPerObj(3,:) , '--', 'MarkerSize', 15, 'LineWidth', 2, 'HandleVisibility', 'off', 'Color', curColor );
+                plot( DATA.iters.Psi,  nPerObj(1,:) , '--', 'MarkerSize', 15, 'LineWidth', 2, 'HandleVisibility', 'off', 'Color', curColor );
+                plot( DATA.iters.Psi,  nPerObj(3,:) , '--', 'MarkerSize', 15, 'LineWidth', 2, 'HandleVisibility', 'off', 'Color', curColor );
             end
         else
-            plot( DATA.iters.S,  nTotal,  '.-', 'MarkerSize', 15, 'LineWidth', 2, 'HandleVisibility', taskVis, 'Color', curColor );
+            plot( DATA.iters.Psi,  nTotal,  '.-', 'MarkerSize', 15, 'LineWidth', 2, 'HandleVisibility', taskVis, 'Color', curColor );
         end
     end
 end

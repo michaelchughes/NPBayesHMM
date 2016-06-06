@@ -3,13 +3,18 @@ function [Psi, algP, outP] = initBPHMMPrevRun( data, model, initParams, algParam
 INFO = loadSamplerInfo( initParams.jobID, initParams.taskID );
 OUT = loadSamplerOutput( initParams.jobID, initParams.taskID );
 
+if isfield( initParams,'queryIter' )
 [~, bestID] = min( abs( OUT.iters.Psi - initParams.queryIter ) );
+else
+    bestID = length( OUT.iters.Psi );
+end
 
 Psi = unpackBPHMMState( OUT.Psi( bestID ), INFO.data, INFO.model );
 
 algP = updateParamsWithUserInput( INFO.algParams, {} );
 outP = updateParamsWithUserInput( INFO.outParams, {} );
 algP.Niter = algParams.Niter;
+algP.TimeLimit = algParams.TimeLimit;
 outP.saveDir = outParams.saveDir;
 outP.jobID   = outParams.jobID;
 outP.taskID  = outParams.taskID;

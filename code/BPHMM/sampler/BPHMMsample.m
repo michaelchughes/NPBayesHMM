@@ -11,13 +11,20 @@ function [Psi, Stats] = BPHMMsample( Psi, data, algP)
 %    HMM hypers      alph/kappa  (MH proposals via Gamma random walk)
 %    BP  hypers      gamma/c     (MH proposals / Gibbs updates)
 Stats=struct();
-if algP.doAnneal
+if algP.doAnneal ~= 0
    T0 = algP.Anneal.T0;
    Tf = algP.Anneal.Tf;
    
-   if Psi.iter >= T0
-       tau = Tf/5; % 5*tau = "fully charged" (invTemp > 0.99 )
-       Psi.invTemp = 1-exp(-(Psi.iter-T0)./tau);
+   if Psi.iter >= T0 && Psi.iter < Tf
+       switch algP.doAnneal
+        case 'Exp'
+           tau = Tf/5; % 5*tau = "fully charged" (invTemp > 0.99 )
+           Psi.invTemp = 1-exp(-(Psi.iter-T0)./tau);
+        case 'Lin'
+            Psi.invTemp = (Psi.iter-T0)/(Tf-T0);
+       end
+   elseif Psi.iter >= Tf
+       Psi.invTemp = 1;
    else
        Psi.invTemp = 0;
    end

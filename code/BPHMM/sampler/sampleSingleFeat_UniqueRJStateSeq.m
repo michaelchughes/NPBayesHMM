@@ -14,7 +14,7 @@ function [Psi, RhoTerms] = ...
 %  Psi : new model config (with potentially new unique features for ii )
 %  RhoTerms : some stats about the MH proposal and what kind of move occurs
 
-doDebug=1;
+doDebug=0;
 
 % ========================================================  UNPACK
 F = Psi.F;
@@ -181,7 +181,7 @@ logQHastings = logQ_Rev.z - logQ.z ...
 if algParams.doAnneal
     if Psi.invTemp == 0 && isinf(logQHastings)
         logQHastings = -Inf; % always want to ignore in this case!
-        % Otherwise, we are not reversible!
+        % this is a sign of something seriously bad with construction
     else
         logQHastings = Psi.invTemp * logQHastings;
     end
