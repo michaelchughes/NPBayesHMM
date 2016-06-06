@@ -3,15 +3,9 @@ with the NPBayesHMM toolbox. We cover prerequisite installation and
 configuration details, describe the intended workflow and syntax for
 running a simulation, and provide some tips on accessing, interpreting,
 and visualizing results. For a technical introduction to the BP-HMM as a
-probabilistic model, see our AOAS 2014 journal article.
+probabilistic model, see our [AOAS 2014 journal article](https://github.com/michaelchughes/NPBayesHMM#academic-citation).
 
-* [Prerequisites](#markdown-header-Prerequisites)
-* [ Running MCMC](#markdown-header-Running-MCMC)
-
- Quick Intro 
-=============
-
-We’ll denote the installation directory of the toolbox as `HOME`.
+Throughout this guid, we’ll denote the installation directory of the toolbox as `HOME`.
 
 To actually dive into code, see the various demo scripts, located in
 `HOME/code/demo/`. In particular, check out `EasyDemo`, an “all in one
@@ -19,7 +13,15 @@ file” introductory script showing loading data, running MCMC, and
 plotting results.
 
 Unfortunately, you’ll definitely need to configure your local toolbox to
-get these examples to run properly (see next section).
+get these examples to run properly. Read on for details...
+
+
+#### Quick links
+* [Prerequisites](#-prerequisites)
+* [Running MCMC](#-running-mcmc)
+* [Visualization Guide](#-visualization-guide)
+* [Dataset Guide](#-dataset-guide)
+
 
  Prerequisites
 ==============
@@ -224,7 +226,7 @@ You can load this information into Matlab workspace easily via
 where the variables `INFO`,`OUT` are structs that contain all the
 necessary fields.
 
- Visualizing Results 
+ Visualization Guide 
 =====================
 
 NPBayesHMM provides several Matlab scripts for visualizing simulation
