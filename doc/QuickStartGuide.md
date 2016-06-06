@@ -5,7 +5,7 @@ running a simulation, and provide some tips on accessing, interpreting,
 and visualizing results. For a technical introduction to the BP-HMM as a
 probabilistic model, see our [AOAS 2014 journal article](https://github.com/michaelchughes/NPBayesHMM#academic-citation).
 
-Throughout this guid, we’ll denote the installation directory of the toolbox as `HOME`.
+Throughout this guide, we’ll denote the installation directory of the toolbox as `HOME`.
 
 To actually dive into code, see the various demo scripts, located in
 `HOME/code/demo/`. In particular, check out `EasyDemo`, an “all in one
@@ -17,10 +17,10 @@ get these examples to run properly. Read on for details...
 
 
 #### Quick links
-* [Prerequisites](#-prerequisites)
-* [Running MCMC](#-running-mcmc)
-* [Visualization Guide](#-visualization-guide)
-* [Dataset Guide](#-dataset-guide)
+* [Prerequisites](#prerequisites)
+* [Running MCMC](#running-mcmc)
+* [Visualization Guide](#visualization-guide)
+* [Dataset Guide](#dataset-guide)
 
 
  Prerequisites

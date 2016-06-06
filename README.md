@@ -10,9 +10,9 @@ This software is released under the BSD 3-clause license. Please see the LICENSE
 
 *Update 2016:* This repo is not under active development, but I'm still happy to handle support requests.
 
-## Organization
+## Repo Contents
 
-The repository is organized as follows:
+The repository has the following primary content:
 
 * code/
 
