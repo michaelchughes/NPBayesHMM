@@ -10,18 +10,25 @@ This software is released under the BSD 3-clause license. Please see the LICENSE
 
 *Update 2016:* This repo is not under active development, but I'm still happy to handle support requests.
 
-# Organization
+## Organization
 
-The repository is organized as follows:  
-  code/ contains relevant Matlab code. This should be the working dir in Matlab.
-        within code/, you can find a fast intro script in code/demo/EasyDemo.m
-  doc/  contains human-readable documentation.
-        QuickStartGuide.md should be your one-stop resource for getting started.
-  data/ contains one example dataset (6 Mocap sequences of various exercises)
-        See the demos for how to run posterior inference on this data. 
-        Other example datasets (from our NIPS 2012 paper) are available by contacting Mike via email.
+The repository is organized as follows:
+
+* code/
+
+contains relevant Matlab code. This should be the working dir in Matlab. within code/, you can find a fast intro script in code/demo/EasyDemo.m
+
+* doc/
+
+contains human-readable documentation. QuickStartGuide.md should be your one-stop resource for getting started.
+
+* data/ 
+
+contains one example dataset (6 Mocap sequences of various exercises)
+See the demos for how to run posterior inference on this data. 
+Other example datasets (from our NIPS 2012 paper) are available by contacting Mike via email.
       
-# Academic Citation
+## Academic Citation
 
 If you find this toolbox useful, please cite one of our papers:
 
