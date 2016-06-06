@@ -18,12 +18,12 @@ get these examples to run properly. Read on for details...
 
 #### Quick links
 * [Prerequisites](#prerequisites)
-* [Running MCMC](#running-mcmc)
+* [Training Models via MCMC](#training-models-via-mcmc)
 * [Visualization Guide](#visualization-guide)
 * [Dataset Guide](#dataset-guide)
 
 
- Prerequisites
+Prerequisites
 ==============
 
  Dependencies
@@ -81,8 +81,8 @@ Also create “ProfileResults.path” in `HOME/code/`. This file indicates
 where to store browseable HTML results from the Matlab profiler, in case
 you want to use this feature.
 
- Running MCMC 
-==============
+Training models via MCMC
+========================
 
 The NPBayesHMM toolbox allows efficient posterior inference for latent
 structure in sequential data. We employ Markov Chain Monte Carlo to do
@@ -226,7 +226,7 @@ You can load this information into Matlab workspace easily via
 where the variables `INFO`,`OUT` are structs that contain all the
 necessary fields.
 
- Visualization Guide 
+Visualization Guide
 =====================
 
 NPBayesHMM provides several Matlab scripts for visualizing simulation
@@ -313,7 +313,7 @@ course, this is only possible when this function is provided the
 `stateSeq` function (which happens implicitly when called with a jobID
 and taskID).
 
- Dataset Guide
+Dataset Guide
 ==============
 
 Here's a quick explanation of how to use your own custom datasets with the toolbox. First, start by looking at the `demo/EasyDemo.m` script. It shows how you can use any dataset in two easy steps.
