@@ -18,9 +18,9 @@ The repository is organized as follows:
 
 contains relevant Matlab code. This should be the working dir in Matlab. within code/, you can find a fast intro script in code/demo/EasyDemo.m
 
-* doc/
+* [doc/QuickStartGuide.md](doc/QuickStartGuide.md)
 
-contains human-readable documentation. QuickStartGuide.md should be your one-stop resource for getting started.
+This plain-text documentation file is your one-stop resource for getting started. Any further questions, please contact Mike.
 
 * data/ 
 

@@ -5,6 +5,9 @@ running a simulation, and provide some tips on accessing, interpreting,
 and visualizing results. For a technical introduction to the BP-HMM as a
 probabilistic model, see our AOAS 2014 journal article.
 
+* [Prerequisites](#markdown-header-Prerequisites)
+* [ Running MCMC](#markdown-header-Running-MCMC)
+
  Quick Intro 
 =============
 
