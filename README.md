@@ -25,11 +25,28 @@ The repository is organized as follows:
 
 If you find this toolbox useful, please cite one of our papers:
 
-NIPS 2012 paper, which 
-M. Hughes, E. Fox, and E. Sudderth. 
-"Effective Split-Merge Monte Carlo Methods for Nonparametric Models of Sequential Data". 
-Advances of Neural Information Processing Systems (NIPS) 2012.
-http://web.michaelchughes.com/research/bp-hmm-split-merge-inference/HughesFoxSudderth_NIPS2012.pdf
+
+#### AOAS 2014 journal article
+
+> This long-form article presents a coherent reference for understanding the BP-HMM and BP-AR-HMM models, as well as an updated split-merge MCMC inference algorithm.
+
+* "Joint Modeling of Multiple Time Series via the Beta Process with Application to Motion Capture Segmentation."
+Emily Fox, Michael C. Hughes, Erik B. Sudderth, Michael I. Jordan
+Annals of Applied Statistics, Vol. 8(3), 2014.
+[[paper]](http://michaelchughes.com/papers/FoxHughesSudderthJordan_AOAS_2014.pdf)
+[[supplement]](http://michaelchughes.com/papers/FoxHughesSudderthJordan_AOAS_2014_supplement.pdf)
+
+
+#### NIPS 2012 conference paper
+
+> Our NIPS 2012 paper introduced improved split-merge inference algorithm for the BP-HMM.
+
+* "Effective Split-Merge Monte Carlo Methods for Nonparametric Models of Sequential Data". 
+Michael C. Hughes, Emily B. Fox, and Erik B. Sudderth.
+NIPS 2012.
+[[paper]](http://michaelchughes.com/papers/HughesFoxSudderth_NIPS_2012.pdf)
+[[supplement]](http://michaelchughes.com/papers/HughesFoxSudderth_NIPS_2012_supplement.pdf)
+
 
 ## Acknowledgements
 
