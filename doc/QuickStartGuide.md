@@ -344,3 +344,22 @@ for seqID = 1:3
 end
 ```
 
+Loading Mocap6 dataset from disk
+--------------------------------
+To work with the 6-sequence motion capture dataset used in our papers, you just need to load it like so
+```
+data = readSeqDataFromPlainText( '../data/mocap6/' );
+```
+
+See the [readSeqDataFromPlainText.m](https://github.com/michaelchughes/NPBayesHMM/blob/master/code/io/readSeqDataFromPlainText.m) for details. We basically expect the following plain-text files to be present in the provided directory:
+
+* SeqNames.txt : name of each sequence (one per line)
+
+One plain-text file for each sequence named in SeqNames.txt. e.g. 13_29.dat, 13_30.dat, etc in data/mocap6/
+
+* <sequence_name>.dat : data for specific named sequence (one row per timestep, separated by spaces)
+
+One plain-text .data file for the true labels:
+
+* zTrue.dat : true labels of each sequence (one per line, separated by spaces)
+
