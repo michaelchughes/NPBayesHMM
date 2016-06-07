@@ -91,7 +91,9 @@ title( 'Theta (@ iter 100)', 'FontSize', 20 );
 % Estimated state sequence
 plotStateSeq( alignedPsi100, [1 3] );
 set( gcf, 'Units', 'normalized', 'Position', [0.1 0.25 0.75 0.5] );
-title('Est. Z : Seq 3', 'FontSize', 20 );
+subplotHandles = findobj(gcf,'type','axes');
+title(min(subplotHandles), 'Est. Z : Seq 1', 'FontSize', 20 );
+title(max(subplotHandles), 'Est. Z : Seq 3', 'FontSize', 20 );
 
 fprintf( 'Remember: actual labels for behaviors are *irrelevant* from model perspective\n');
 fprintf( '  what matters: *aligned* behaviors consistently assigned to same datapoints as ground truth\n' );
