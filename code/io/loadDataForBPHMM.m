@@ -51,57 +51,73 @@ switch datasetName
             fprintf( '... wrote to file for future quick loading: %s\n', matfilepath );
         end
         doLoadFromFile = 0;
-    case 'MoCap6'
-        if ismac
-            DATA_DIR = '~/freeware/matlab/BPARHMMtoolbox/data/';
-            Q = load( '~/freeware/matlab/BPARHMMtoolbox/Erik/exerciseRoutines.mat' );
-            addpath( genpath( '~/freeware/matlab/BPARHMMtoolbox/Erik/' ) );
-        else
-            DATA_DIR = '/data/liv/mhughes/data/MoCap6/';        
-            Q = load( fullfile( DATA_DIR, 'MAT', 'exerciseRoutines.mat' ) );
-            addpath( genpath( '~/MoCap/' ) );
-        end
-                
-        matfilename = sprintf( 'MoCapSensorData%s.mat', getPreprocString( Preproc ) );
-        matfilepath = fullfile( DATA_DIR, 'MAT', matfilename );
-        if exist( matfilepath, 'file' )
-            MAT = load(  matfilepath );
-            data_struct = MAT.data_struct;
-            fprintf( '... read AMC data from MAT file: %s\n', matfilepath );
-        else
-            
-            RawData = Q.Data;
-            for ii = 1:length( RawData )
-                % replace 'MoCap/data/' path with '' (nothing)
-                fname = strrep( Q.fname{ii}, '../MoCap/data/', '' );
-                if ismac
-                    D = readAMC( fullfile( DATA_DIR, fname), 1 );
-                else
-                    D = readAMC( fullfile( DATA_DIR, 'amc', fname), 1 );
-                end
-                fprintf( '  read in AMC file %s. # frames=%d\n', fname, size(D,1) );
-                % Transpose to apply same preprocessing as in orig. BP-HMM
-                D = D';
-                if isfield( Preproc, 'channelIDs' )
-                    D = D( Preproc.channelIDs, : );
-                end;
-                meanD = mean(D,2);
-                D = bsxfun( @minus, D, meanD );
-                D = preprocessData(D, Preproc.windowSize );
-                
-                % Transpose back, since we want it in T x obsDim format
-                data_struct(ii).obs = D';
-                data_struct(ii).fileName = fname;
-                data_struct(ii).T = size( data_struct(ii).obs, 1);
-                data_struct(ii).true_labels = Q.true_labels{ii};
-                
-            end 
-            data_struct(3).true_labels( data_struct(3).true_labels==10 ) = 12;
-
-            save(  matfilepath , 'data_struct' );
-            fprintf( '... wrote to file for future quick loading: %s\n', matfilepath );
-        end
-        doLoadFromFile = 0;
+     case 'MoCap6'
+          DATA_DIR = '/tmp/';
+          try
+              Q = load('mocap6.mat');
+          catch e
+              error('Need to checkout github.com/michaelchughes/mocap6dataset and add to matlabpath');
+          end
+          
+          N = 6;
+          data_struct = repmat(struct(), N, 1);
+          for ii = 1:N
+             data_struct(ii).true_labels = Q.DataBySeq(ii).TrueZ;
+             data_struct(ii).obs = Q.DataBySeq(ii).X;
+             data_struct(ii).obsPrev = Q.DataBySeq(ii).Xprev;
+             data_struct(ii).fileName = Q.DataBySeq(ii).filename;
+             data_struct(ii).T = size(data_struct(ii).obs, 1);
+          end
+%         if ismac
+%             DATA_DIR = '~/freeware/matlab/BPARHMMtoolbox/data/';
+%             Q = load( '~/freeware/matlab/BPARHMMtoolbox/Erik/exerciseRoutines.mat' );
+%             addpath( genpath( '~/freeware/matlab/BPARHMMtoolbox/Erik/' ) );
+%         else
+%             DATA_DIR = '/data/liv/mhughes/data/MoCap6/';        
+%             Q = load( fullfile( DATA_DIR, 'MAT', 'exerciseRoutines.mat' ) );
+%             addpath( genpath( '~/MoCap/' ) );
+%         end
+%                 
+%         matfilename = sprintf( 'MoCapSensorData%s.mat', getPreprocString( Preproc ) );
+%         matfilepath = fullfile( DATA_DIR, 'MAT', matfilename );
+%         if exist( matfilepath, 'file' )
+%             MAT = load(  matfilepath );
+%             data_struct = MAT.data_struct;
+%             fprintf( '... read AMC data from MAT file: %s\n', matfilepath );
+%         else
+%             
+%             RawData = Q.Data;
+%             for ii = 1:length( RawData )
+%                 % replace 'MoCap/data/' path with '' (nothing)
+%                 fname = strrep( Q.fname{ii}, '../MoCap/data/', '' );
+%                 if ismac
+%                     D = readAMC( fullfile( DATA_DIR, fname), 1 );
+%                 else
+%                     D = readAMC( fullfile( DATA_DIR, 'amc', fname), 1 );
+%                 end
+%                 fprintf( '  read in AMC file %s. # frames=%d\n', fname, size(D,1) );
+%                 % Transpose to apply same preprocessing as in orig. BP-HMM
+%                 D = D';
+%                 if isfield( Preproc, 'channelIDs' )
+%                     D = D( Preproc.channelIDs, : );
+%                 end;
+%                 meanD = mean(D,2);
+%                 D = bsxfun( @minus, D, meanD );
+%                 D = preprocessData(D, Preproc.windowSize );
+%                 
+%                 % Transpose back, since we want it in T x obsDim format
+%                 data_struct(ii).obs = D';
+%                 data_struct(ii).fileName = fname;
+%                 data_struct(ii).T = size( data_struct(ii).obs, 1);
+%                 data_struct(ii).true_labels = Q.true_labels{ii};
+%                 
+%             end 
+%             data_struct(3).true_labels( data_struct(3).true_labels==10 ) = 12;
+% 
+%             save(  matfilepath , 'data_struct' );
+%             fprintf( '... wrote to file for future quick loading: %s\n', matfilepath );
+%         end
+%         doLoadFromFile = 0;
 
     case 'ChromatinStates'
         X = load( '/data/liv/mhughes/data/ChromatinStates/HMMdata/MarkerSeqData_custom.mat' );

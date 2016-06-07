@@ -12,12 +12,12 @@ function [data] = genToySeqData_ARGaussian( nStates, nDim, N, T, R)
 %                define the likelihood of the first "kept" observation
 
 % ------------------------------- Remember old state to use again afterward
-curStream = RandStream.getDefaultStream();
+curStream = RandStream.getGlobalStream();
 entryState = curStream.State;
 
 % Reset PRNG state to default value with SEED 0
 %       so that we always get same synth data regardless of when called
-reset( RandStream.getDefaultStream(), 0);
+reset( RandStream.getGlobalStream(), 0);
 
 if T < 0
     doVaryLength = 1;
@@ -139,7 +139,7 @@ for i = 1:N
 end
 
 % ---------------------------------------------------------  Reset stream
-curStream = RandStream.getDefaultStream();
+curStream = RandStream.getGlobalStream();
 curStream.State = entryState;
 
 end % main function

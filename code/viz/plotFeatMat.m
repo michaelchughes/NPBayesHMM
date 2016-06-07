@@ -73,9 +73,11 @@ set( gca, 'FontSize', 16 );
 colormap bone;
 colorbar(  'YTick', [0 1 2],       'YTickLabel', {'Disabled', 'Available', 'Active'});
 
+% Force ytick labels to be integers
 ticks = get( gca, 'YTick');
 ticks = ticks( ticks >= 1 );
 ticks = ticks( ticks <= length(objIDs) );
+ticks = unique(int32(ticks));
 set( gca, 'YTickLabel', objIDs(ticks) );
 
 end

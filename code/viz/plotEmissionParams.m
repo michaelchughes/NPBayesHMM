@@ -7,7 +7,7 @@ MIN_THR = 0.01;
 if isstruct( varargin{1} )
     if isfield( varargin{1}, 'ThetaM' )
         theta = varargin{1}.ThetaM.theta;
-    elseif isfield( varargin{1}, 'theta' ) || isprop(varargin{1},'theta')
+    elseif isfield( varargin{1}, 'theta' ) % || isprop(varargin{1},'theta')
         theta = varargin{1}.theta;
     else
         theta = varargin{1};

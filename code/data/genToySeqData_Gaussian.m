@@ -131,7 +131,7 @@ for i = 1:N
 end
 
 % ---------------------------------------------------------  Reset stream
-curStream = RandStream.getDefaultStream();
+curStream = RandStream.getGlobalStream();
 curStream.State = entryState;
 
 PsiTrue.F = zeros(N, nStates);

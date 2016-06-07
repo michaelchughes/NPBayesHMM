@@ -111,5 +111,5 @@ Psi.bpM = model.bpM;
 
 
 % ---------------------------------------------------------  Reset stream
-curStream = RandStream.getDefaultStream();
+curStream = RandStream.getGlobalStream();
 curStream.State = entryState;
