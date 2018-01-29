@@ -151,7 +151,8 @@ Here’s a detailed breakdown of input parameters used by `runBPHMM`.
     Note that you’ll need to edit these defaults when you want to study
     a new dataset. Alternatively, you can simply pass in a `SeqData`
     object instead of a cell array to run inference directly on the
-    provided dataset. Please see `HOME/doc/DataGuide.pdf` for details of
+    provided dataset. Please see the [Dataset Guide](#dataset-guide) section
+    of this document for details of
     how NPBayesHMM represents a collection of observed sequential data.
 
     Relevant defaults: `code/io/getDataPreprocInfo.m`.
